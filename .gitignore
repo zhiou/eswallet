@@ -41,3 +41,6 @@ iOS/transmit.xcodeproj/xcuserdata/zhouhuang.xcuserdatad/xcdebugger/Breakpoints_v
 iOS/transmit.xcodeproj/xcuserdata/zhouhuang.xcuserdatad/xcschemes/xcschememanagement.plist
 iOS/transmit.xcodeproj/project.xcworkspace/xcuserdata/zhouhuang.xcuserdatad/UserInterfaceState.xcuserstate
 iOS/transmit.xcodeproj/project.xcworkspace/xcuserdata/zhiou.xcuserdatad/UserInterfaceState.xcuserstate
+iOS/fastlane/report.xml
+iOS/fastlane/test_output/report.html
+iOS/fastlane/test_output/report.junit
