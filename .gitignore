@@ -30,3 +30,15 @@
 *.exe
 *.out
 *.app
+vendor/libs/.DS_Store
+vendor/libs/common/.DS_Store
+vendor/libs/driver/.DS_Store
+iOS/.DS_Store
+include/.DS_Store
+.DS_Store
+iOS/transmit.xcodeproj/xcuserdata/zhiou.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+iOS/transmit.xcodeproj/xcuserdata/zhiou.xcuserdatad/xcschemes/xcschememanagement.plist
+iOS/transmit.xcodeproj/xcuserdata/zhouhuang.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+iOS/transmit.xcodeproj/xcuserdata/zhouhuang.xcuserdatad/xcschemes/xcschememanagement.plist
+iOS/transmit.xcodeproj/project.xcworkspace/xcuserdata/zhouhuang.xcuserdatad/UserInterfaceState.xcuserstate
+iOS/transmit.xcodeproj/project.xcworkspace/xcuserdata/zhiou.xcuserdatad/UserInterfaceState.xcuserstate

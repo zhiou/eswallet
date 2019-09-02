@@ -1,0 +1,12 @@
+language: c++
+
+os: osx
+
+osx_image: xcode10
+
+before_install:
+
+- gem install fastlane --no-rdoc --no-ri --no-document --quiet
+
+script:
+- fastlane test

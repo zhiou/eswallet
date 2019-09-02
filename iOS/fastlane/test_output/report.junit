@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites name='TransmitTests.xctest' tests='13' failures='0'>
+  <testsuite name='TransmitTests' tests='13' failures='0'>
+    <testcase classname='TransmitTests' name='test3des112' time='0.002'/>
+    <testcase classname='TransmitTests' name='testBytestream' time='0.001'/>
+    <testcase classname='TransmitTests' name='testDevice' time='0.001'/>
+    <testcase classname='TransmitTests' name='testError' time='0.001'/>
+    <testcase classname='TransmitTests' name='testFcBuffer' time='0.001'/>
+    <testcase classname='TransmitTests' name='testHash' time='0.001'/>
+    <testcase classname='TransmitTests' name='testJson' time='0.002'/>
+    <testcase classname='TransmitTests' name='testLogger' time='0.002'/>
+    <testcase classname='TransmitTests' name='testPath' time='0.001'/>
+    <testcase classname='TransmitTests' name='testPerformanceExample' time='0.265'/>
+    <testcase classname='TransmitTests' name='testS300' time='0.004'/>
+    <testcase classname='TransmitTests' name='testSm2' time='0.014'/>
+    <testcase classname='TransmitTests' name='testWallet' time='0.001'/>
+  </testsuite>
+</testsuites>
