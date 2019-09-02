@@ -4,9 +4,17 @@ os: osx
 
 osx_image: xcode10
 
+compiler: 
+- clang
+
+ruby: 2.2.0
+
 before_install:
 
 - gem install fastlane --no-rdoc --no-ri --no-document --quiet
 
+install: true
+
 script:
+- cd iOS
 - fastlane test
