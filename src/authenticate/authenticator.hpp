@@ -6,8 +6,7 @@
 //  Copyright © 2019 zzstudio. All rights reserved.
 //
 
-#ifndef authenticator_h
-#define authenticator_h
+#pragma once
 
 #include <string>
 #include "handshake.hpp"
@@ -150,4 +149,3 @@ namespace excelsecu {
     };
     
 }
-#endif /* authenticator_h */

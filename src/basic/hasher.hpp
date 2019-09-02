@@ -11,7 +11,7 @@
 #include <string>
 
 namespace excelsecu {
-    class bytestream;
+
     
     class hasher {
     public:

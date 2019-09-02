@@ -9,10 +9,9 @@
 #pragma once
 
 #include <string>
+#include "bytestream.hpp"
 
 namespace excelsecu {
-    
-    class bytestream;
     
     class coder {
     public:

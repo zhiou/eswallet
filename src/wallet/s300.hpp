@@ -17,7 +17,6 @@
 
 #include "wallet.hpp"
 #include "eslog.hpp"
-#include "bytestream.hpp"
 
 #include "address.hpp"
 #include "error.hpp"
@@ -261,7 +260,7 @@ public:
         
         if (is_key) {
             
-            uint32_t account = 0x80000000 | account_index;
+            uint32_t account = (uint32_t)(0x80000000 | account_index);
             size_t start_index = pm_data.find("EOS") + 3;
             
             std::vector<unsigned char> vchRet;
@@ -303,7 +302,7 @@ public:
             throw tsm_err("coin type don't support to get default permission", ERROR_COMMON_FUNCTION_NOT_SUPPORT);
         }
         
-        uint32_t account = 0x80000000 | account_index;
+        uint32_t account = (uint32_t)(0x80000000 | account_index);
         
         auto apdu = bytestream("807400000400000000");
         apdu.append(account);

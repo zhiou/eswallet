@@ -15,6 +15,7 @@
 #include "eventbus.hpp"
 #include "transmit_def.hpp"
 #include "sm2.hpp"
+#include "cipher.hpp"
 
 namespace excelsecu {
     
@@ -131,6 +132,13 @@ namespace excelsecu {
                 repo = bytestream(account_name.c_str(), account_name.length());
             }
             return repo += bytestream("9000");
+        }
+        
+        bool disconnect() {
+            event next;
+            next.msg_type = event_msg::disconnected;
+            eventbus::instance().post(next);
+            return true;
         }
     public:
         void handle(event& e) override final {

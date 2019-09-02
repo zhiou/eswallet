@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <string>
 #include <unordered_map>
 #include <functional>
 
@@ -23,7 +24,7 @@
 namespace excelsecu {
     
     using cos_err_desp_map = std::unordered_map<std::string, std::string>;
-    
+
     static cos_err_desp_map cos_err_desp = {
         // from cos
         {"9000",    "正确"},

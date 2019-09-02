@@ -9,27 +9,13 @@
 #import <XCTest/XCTest.h>
 #import "bytestream.hpp"
 
-#import "device.hpp"
-#import "transmit.hpp"
-#import "ble_driver.hpp"
-#import "authenticator.hpp"
-#import "configure.hpp"
-#import "audio_driver.hpp"
-#import "driver.hpp"
+
 #import "hash.hpp"
 #import "sm2.hpp"
 #import "cipher.hpp"
-#import "driver_mocker.hpp"
 #import "eslog.hpp"
 #import "basic_file_sink.hpp"
-#import "wallet.hpp"
-#import "json.hpp"
-#import "path.hpp"
-#import "fcbuffer.hpp"
-#import "s300.hpp"
 
-#import <array>
-#import <regex>
 using namespace excelsecu;
 
 @interface TransmitTests : XCTestCase
@@ -122,24 +108,16 @@ using namespace excelsecu;
     auto sm3_digest = sm3::hash(bs1);
     std::cout << "sm3:" << std::endl << sm3_digest << std::endl;
     
-    auto sm3_digest_mapper = bs1.map<bytestream>([](const bytestream& msg){
+    auto sm3_mapper = bs1.map<bytestream>([](const bytestream& msg){
         return sm3::hash(msg);
     });
+    
+    auto sm3_hash = bs1.map<bytestream>(sm3::hash);
     std::cout << "sm3_mapper:" << std::endl << sm3_digest << std::endl;
-}
-
-- (void)testDevice {
     
-    configure::current().set_host_name("周煌的iphone");
-    
-    using mock_handshake = handshake<driver_mocker, authenticator<driver_mocker, configure>, configure>;
-    using mock_device = device<transmit<driver_mocker, mock_handshake>>;
-    mock_device mocker;
-    
-    mocker.connect("hehe");
-    auto apdu_get_random = bytestream("0084000008");
-    auto repo = mocker.send(apdu_get_random);
-    std::cout << "repo = " << repo << std::endl;
+    XCTAssert(sm3_digest == "620DEC865F20797E81196CAECCB37C4559AE3C83A4DDC0685E5766FC7DF5FE78");
+    XCTAssert(sm3_mapper == "620DEC865F20797E81196CAECCB37C4559AE3C83A4DDC0685E5766FC7DF5FE78");
+    XCTAssert(sm3_hash == "620DEC865F20797E81196CAECCB37C4559AE3C83A4DDC0685E5766FC7DF5FE78");
 }
 
 - (void)testSm2 {
@@ -265,73 +243,5 @@ using namespace excelsecu;
     }];
 }
 
-- (void)testWallet {
-    XCTAssert(wallet::is_btc("btc"));
-    XCTAssert(!wallet::is_btc("kfc"));
-    
-    XCTAssert(wallet::is_eth("eth"));
-    XCTAssert(!wallet::is_eth("fth"));
-    
-    XCTAssert(wallet::is_eos("eos"));
-    XCTAssert(!wallet::is_eos("eth"));
-}
 
-- (void)testJson {
-    using json = nlohmann::json;
-    
-    json j = { {"walletID", "020001"} };
-    std::cout << j << std::endl;
-    
-    json jj = { {"jj", j}, {"include", true } };
-    std::cout << jj << std::endl;
-}
-
-- (void)testPath {
-    auto buf = excelsecu::wallet::path::to_buffer("m/44'/60'/1'/0/0");
-    std::cout << buf << std::endl;
-}
-
-- (void)testFcBuffer {
-    std::string name = "omotjik";
-    auto encoded = wallet::fcbuffer::encode_name(name);
-    std::cout << encoded << std::endl;
-
-    auto decoded = wallet::fcbuffer::decode_name(encoded);
-     std::cout << decoded << std::endl;
-}
-
-
-- (void)testS300 {
-    
-    configure::current().set_host_name("周煌的iphone");
-    
-    using mock_handshake = handshake<driver_mocker, authenticator<driver_mocker, configure>, configure>;
-    using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
-    mock s300_mocker;
-    
-    s300_mocker.connect("hehe");
-//    auto apdu_get_random = bytestream("0084000008");
-//    auto repo = mocker.send(apdu_get_random);
-//    std::cout << "repo = " << repo << std::endl;
-    
-    s300_mocker.init();
-    
-    auto ret = s300_mocker.get_wallet_info();
-    std::cout << ret << std::endl;
- 
-    s300_mocker.get_pubkey(wallet::coin::btc, "m/44'/1'/0'/0/0");
-    
-    s300_mocker.get_address(wallet::coin::btc, "m/44'/1'/0'/0/0");
-    
-    ret = s300_mocker.get_derive_data(wallet::coin::btc, "m/44'/1'/0'/0/0");
-    std::cout << ret << std::endl;
-    
-    // key
-    auto account_name = s300_mocker.get_account_name(wallet::coin::eos, 0, "m/44'/1'/0'/0/0");
-    std::cout << account_name << std::endl;
-    
-    s300_mocker.get_default_permission(wallet::coin::eos, 0);
-    
-//    auto permissions = s300_mocker.get_permission(wallet::coin::eos, 0);
-}
 @end

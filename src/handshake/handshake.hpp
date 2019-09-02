@@ -6,19 +6,18 @@
 //  Copyright © 2019 zzstudio. All rights reserved.
 //
 
-#ifndef handshake_hpp
-#define handshake_hpp
+#pragma once
 
 #include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
-#include "bytestream.hpp"
 #include "eventbus.hpp"
 #include "transmit_def.hpp"
 #include "authenticator.hpp"
 #include "sm2.hpp"
 #include "eslog.hpp"
+#include "cipher.hpp"
 
 namespace excelsecu {
     
@@ -150,5 +149,3 @@ namespace excelsecu {
         std::unique_ptr<SessionContext> m_session_context;
     };
 }
-            
-#endif /* handshake_hpp */

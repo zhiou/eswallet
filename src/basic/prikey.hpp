@@ -16,7 +16,6 @@
 
 namespace excelsecu {
     
-    class bytestream;
     class pubkey;
     
     class prikey {

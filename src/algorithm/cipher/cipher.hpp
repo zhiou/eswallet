@@ -13,8 +13,6 @@
 
 namespace excelsecu {
     
-    class bytestream;
-    
     namespace cipher {
         
         enum class type {

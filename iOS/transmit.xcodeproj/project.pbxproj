@@ -21,8 +21,9 @@
 		9F622D8D231CDE9B00622B42 /* libiOSBLEDriver.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F622D5B231CDE9B00622B42 /* libiOSBLEDriver.a */; };
 		9F622D8E231CDE9B00622B42 /* libEsCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F622D5D231CDE9B00622B42 /* libEsCommon.a */; };
 		9F622D8F231CDE9B00622B42 /* libEsCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F622D5D231CDE9B00622B42 /* libEsCommon.a */; };
+		9F622D93231D05F500622B42 /* WalletTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F622D92231D05F500622B42 /* WalletTest.mm */; };
+		9F622D98231D105500622B42 /* sm2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F62355A23063BC500491B04 /* sm2.cpp */; };
 		9F62355923063ADE00491B04 /* hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F62355823063ADE00491B04 /* hash.cpp */; };
-		9F62355B23063BC500491B04 /* sm2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F62355A23063BC500491B04 /* sm2.cpp */; };
 		9F62355F2306418C00491B04 /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F62355E2306418C00491B04 /* libiconv.2.4.0.tbd */; };
 		9F6235602306419400491B04 /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F62355E2306418C00491B04 /* libiconv.2.4.0.tbd */; };
 		9F623650230A7DCF00491B04 /* sink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F623647230A7DCE00491B04 /* sink.cpp */; };
@@ -56,7 +57,7 @@
 		FD59EC2D22F7402600856C2C /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD59EC2B22F7402600856C2C /* base64.cpp */; };
 		FD59EC3022F7403300856C2C /* base58.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD59EC2E22F7403300856C2C /* base58.cpp */; };
 		FD59EC3322F7403F00856C2C /* base32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD59EC3122F7403F00856C2C /* base32.cpp */; };
-		FDE2D14B22F0B57C00EF94D3 /* TransmitTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = FDE2D14A22F0B57C00EF94D3 /* TransmitTests.mm */; };
+		FDE2D14B22F0B57C00EF94D3 /* BasicTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = FDE2D14A22F0B57C00EF94D3 /* BasicTest.mm */; };
 		FDE2D14D22F0B57C00EF94D3 /* libtransmit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF623F122C9AF900056A5DC /* libtransmit.a */; };
 /* End PBXBuildFile section */
 
@@ -156,6 +157,7 @@
 		9F622D89231CDE9B00622B42 /* SafeCommunication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SafeCommunication.h; sourceTree = "<group>"; };
 		9F622D8A231CDE9B00622B42 /* EsLogViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EsLogViewer.h; sourceTree = "<group>"; };
 		9F622D8B231CDE9B00622B42 /* EsError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EsError.h; sourceTree = "<group>"; };
+		9F622D92231D05F500622B42 /* WalletTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WalletTest.mm; sourceTree = "<group>"; };
 		9F62355823063ADE00491B04 /* hash.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = hash.cpp; sourceTree = "<group>"; };
 		9F62355A23063BC500491B04 /* sm2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sm2.cpp; sourceTree = "<group>"; };
 		9F62355C2306417C00491B04 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
@@ -231,7 +233,7 @@
 		FD59EC3222F7403F00856C2C /* base32.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = base32.hpp; sourceTree = "<group>"; };
 		FD8BE53B22CA5E240064E97C /* session_key.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = session_key.cpp; sourceTree = "<group>"; };
 		FDE2D14822F0B57C00EF94D3 /* TransmitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TransmitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FDE2D14A22F0B57C00EF94D3 /* TransmitTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TransmitTests.mm; sourceTree = "<group>"; };
+		FDE2D14A22F0B57C00EF94D3 /* BasicTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BasicTest.mm; sourceTree = "<group>"; };
 		FDE2D14C22F0B57C00EF94D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -677,7 +679,8 @@
 		FDE2D14922F0B57C00EF94D3 /* TransmitTests */ = {
 			isa = PBXGroup;
 			children = (
-				FDE2D14A22F0B57C00EF94D3 /* TransmitTests.mm */,
+				FDE2D14A22F0B57C00EF94D3 /* BasicTest.mm */,
+				9F622D92231D05F500622B42 /* WalletTest.mm */,
 				FDE2D14C22F0B57C00EF94D3 /* Info.plist */,
 			);
 			path = TransmitTests;
@@ -815,6 +818,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F622D98231D105500622B42 /* sm2.cpp in Sources */,
 				FD59EC3322F7403F00856C2C /* base32.cpp in Sources */,
 				9F083669230E3F7D000EC0C0 /* bit_pony.cpp in Sources */,
 				FD59EC2D22F7402600856C2C /* base64.cpp in Sources */,
@@ -839,7 +843,6 @@
 				9F62355923063ADE00491B04 /* hash.cpp in Sources */,
 				9F62365C230A8F3400491B04 /* logfile.cpp in Sources */,
 				9F623650230A7DCF00491B04 /* sink.cpp in Sources */,
-				9F62355B23063BC500491B04 /* sm2.cpp in Sources */,
 				9F083663230E30B5000EC0C0 /* s300.cpp in Sources */,
 				9FF6242322CC60560056A5DC /* prikey.cpp in Sources */,
 				9F623659230A8AA100491B04 /* basic_file_sink.cpp in Sources */,
@@ -858,7 +861,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FDE2D14B22F0B57C00EF94D3 /* TransmitTests.mm in Sources */,
+				FDE2D14B22F0B57C00EF94D3 /* BasicTest.mm in Sources */,
+				9F622D93231D05F500622B42 /* WalletTest.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1083,6 +1087,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Wno-format-security";
 			};
 			name = Debug;
 		};
@@ -1104,6 +1109,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Wno-format-security";
 			};
 			name = Release;
 		};
@@ -1132,6 +1138,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.zzstudio.readit.TransmitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Wno-format-security";
 			};
 			name = Debug;
 		};
@@ -1156,6 +1163,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.zzstudio.readit.TransmitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Wno-format-security";
 			};
 			name = Release;
 		};

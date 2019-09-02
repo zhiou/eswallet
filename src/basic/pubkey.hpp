@@ -11,8 +11,10 @@
 #include <memory>
 #include <mutex>
 
+#include "bytestream.hpp"
+
 namespace excelsecu {
-    class bytestream;
+    
     class padding_handler;
     
     

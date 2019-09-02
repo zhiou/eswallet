@@ -55,13 +55,13 @@ namespace excelsecu {
             std::string log_msg;
             
             char buf[0x100];
-            int len = snprintf(buf, sizeof(buf), format.c_str(), args...);
+            int len = snprintf(buf, sizeof(buf), (const char*)format.c_str(), args...);
             if (len < sizeof(buf)) {
                 log_msg = std::string(buf);
             }
             if (len > sizeof(buf)) {
                 auto buffer = std::unique_ptr<char>(new char[len + 1]);
-                snprintf(buffer.get(), len+1, format.c_str(), args...);
+                snprintf(buffer.get(), len+1, (const char*)format.c_str(), args...);
                 log_msg = std::string(buffer.get());
             }
             

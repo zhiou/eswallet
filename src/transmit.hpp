@@ -10,11 +10,12 @@
 
 #include <string>
 #include <future>
-#include "bytestream.hpp"
 #include <stdexcept>
 #include <memory>
+
 #include "eventbus.hpp"
 #include "transmit_def.hpp"
+#include "bytestream.hpp"
 #include "EsError.h"
 
 namespace excelsecu {
@@ -59,18 +60,23 @@ namespace excelsecu {
         bytestream send(const bytestream& apdu, bool security = true) noexcept(false)
         {
             bytestream resp;
-            if (std::is_void<Handshake>::value || !security) {
+            
+            if (std::is_void<Handshake>::value || !security)
+            {
                 resp = Driver::instance().send(apdu);
             }
-            else {
+            else
+            {
                 auto enc_apdu = m_handshake->encrypt(apdu);
                 bytestream enc_repo = Driver::instance().send(enc_apdu);
                 resp = m_handshake->decrypt(enc_repo);
             }
+            
             auto error_code = resp.tail(2).hex_str();
             if (error_code != "9000") {
                 throw cos_err(error_code);
             }
+            
             return resp.drop_tail(2);
         }
     public:

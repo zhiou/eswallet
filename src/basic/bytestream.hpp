@@ -14,15 +14,7 @@
 #include <sstream>
 #include <iomanip>
 
-#include "coder.hpp"
-#include "cipher.hpp"
-#include "hasher.hpp"
-
 namespace excelsecu {
-//    class coder;
-    class padding_handler;
-    class hasher;
-    class random_generator;
     
     typedef unsigned char ebyte;
     typedef std::vector<ebyte> ebyte_vec;
@@ -229,26 +221,6 @@ namespace excelsecu {
             return ss.str();
         }
     public:
-        //MARK: encoding & decoding
-//        std::string encode(const coder& acoder){
-//            return acoder.encode(*this);
-//        }
-//        static bytestream decode(const coder& acoder, const std::string &serialized_string)
-//        {
-//            return acoder.decode(serialized_string);
-//        }
-//    public:
-//        //MARK: padding & unpadding
-//        bytestream& padding(const padding_handler&) {
-//            return padding_handler
-//        }
-//        bytestream& unpadding(const padding_handler&);
-//    public:
-//        //MARK: hash
-//        bytestream hash(const hasher& ahasher) {
-//            return ahasher.hash(*this);
-//        }
-    public:
         bytestream tail(size_t aNum) const {
             if (length() < aNum) { throw std::invalid_argument("bytestream out of bounds"); }
             return this->split(length() - aNum, aNum);
@@ -295,7 +267,7 @@ namespace excelsecu {
         std::unique_ptr<ebyte_vec> m_mem;
     };
     
-    std::ostream & operator<<(std::ostream &out, bytestream &obj)
+    inline std::ostream & operator<<(std::ostream &out, bytestream &obj)
     {
         for (auto b: *(obj.m_mem)) {
             out  << std::setw(2) << std::setfill('0') << std::hex << (unsigned int)b;
