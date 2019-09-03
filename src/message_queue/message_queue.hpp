@@ -17,6 +17,7 @@
 #include "any.hpp"
 #include "utility.hpp"
 #include "spinlock.h"
+#include "thread.hpp"
 
 namespace excelsecu {
 
@@ -31,6 +32,7 @@ namespace excelsecu {
         message_handler_t(): queue(k_invalid_queue_id), seq(0) {}
         bool operator == (const message_handler_t& _rhs) const {return queue == _rhs.queue && seq == _rhs.seq;}
         bool operator !=(const message_handler_t& _rhs) const { return !operator==(_rhs); }
+        bool is_broadcast() const { return 0 == seq; }
         message_queue_t queue;
         unsigned int seq;
     };
@@ -137,7 +139,7 @@ namespace excelsecu {
     inline const message_queue_t& handler2queue(const message_handler_t& _handler) { return _handler.queue; }
     
     message_queue_t current_thread_message_queue();
-    message_queue_t tid_tomessage_queue(uint64_t _tid);
+    message_queue_t tid_tomessage_queue(thread_tid _tid);
     uint64_t message_queue_to_tid(message_queue_t _id);
     
     const message_t& running_message();
@@ -259,7 +261,7 @@ namespace excelsecu {
         
         static message_queue_t create_new_message_queue(const char* _msg_queue_name = nullptr);
         static message_queue_t create_new_message_queue(std::shared_ptr<runloop_cond> _breaker, const char* _msg_queue_name = nullptr);
-        static message_queue_t create_new_message_queue(std::shared_ptr<runloop_cond> _breaker, std::thread::id _tid);
+        static message_queue_t create_new_message_queue(std::shared_ptr<runloop_cond> _breaker, thread_tid _tid);
         static void release_new_message_queue(message_queue_t _message_queue_id);
         
     private:
@@ -270,7 +272,7 @@ namespace excelsecu {
         static void __thread_new_runloop(SpinLock* _sp);
 
     private:
-        std::thread     thread_;
+        Thread     thread_;
         std::mutex      message_queue_mutex_;
         message_queue_t message_queue_id_;
         std::shared_ptr<runloop_cond> breaker_;

@@ -82,6 +82,11 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
     
     auto decoded = wallet::fcbuffer::decode_name(encoded);
     std::cout << decoded << std::endl;
+    
+    uint64_t update_auth = 0xD5526CA8DACB4000;
+    auto encoded_name = wallet::fcbuffer::decode_name(update_auth);
+    
+    std::cout << encoded_name << std::endl;
 }
 
 

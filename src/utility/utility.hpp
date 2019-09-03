@@ -33,6 +33,14 @@ namespace excelsecu {
             std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(d);
             return timestamp.count();
         }
+        
+        uint64_t get_tick_span(uint64_t _old_tick)
+        {
+            uint64_t cur_tick = get_tick_count();
+            if (_old_tick > cur_tick) return 0;
+            
+            return cur_tick - _old_tick;
+        }
     }
 }
 

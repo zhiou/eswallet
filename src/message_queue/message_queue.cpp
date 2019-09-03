@@ -10,6 +10,9 @@
 
 #include <list>
 #include <map>
+#include <chrono>
+#include <algorithm>
+#include <condition_variable>
 
 namespace excelsecu {
     
@@ -354,5 +357,561 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
         content.lst_msg.emplace_back(messagewrapper);
         content.breaker->notify(lock);
         return messagewrapper->postid;
+    }
+    
+    static int64_t compute_wait_time(const message_wrapper& _wrap) {
+        int64_t wait_time = 0;
+        
+        if (kImmediately == _wrap.timing.type) {
+            wait_time = 0;
+        } else if (kAfter == _wrap.timing.type) {
+            int64_t time_cost = utility::get_tick_span(_wrap.record_time);
+            wait_time = _wrap.timing.after - time_cost;
+        } else if (kPeriod == _wrap.timing.type) {
+            int64_t time_cost = utility::get_tick_span(_wrap.record_time);
+            
+            if (kAfter == _wrap.period_status) {
+                wait_time = _wrap.timing.after - time_cost;
+            } else if (kPeriod == _wrap.period_status) {
+                wait_time = _wrap.timing.period - time_cost;
+            }
+        }
+        return 0 < wait_time ? wait_time : 0;
+    }
+    
+    message_post_t faster_message(const message_handler_t& _handlerid, const message_t& _message, const message_timing& _timing) {
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        const message_queue_t& id = _handlerid.queue;
+        
+        auto pos = sq_messagequeue_map.find(id);
+        if (sq_messagequeue_map.end() == pos) return kNullPost;
+        
+        message_queue_content& content = pos->second;
+        
+        message_wrapper* messagewrapper = new message_wrapper(_handlerid, _message, _timing, make_seq());
+        
+        for (auto it = content.lst_msg.begin(); it != content.lst_msg.end(); ++it)
+        {
+            if ((*it)->postid.reg == _handlerid && (*it)->message == _message)
+            {
+                if (compute_wait_time(**it) < compute_wait_time(*messagewrapper)) {
+                    delete messagewrapper;
+                    return (*it)->postid;
+                }
+                messagewrapper->postid = (*it)->postid;
+                delete (*it);
+                content.lst_msg.erase(it);
+                break;
+            }
+        }
+        
+        if (content.lst_msg.size() >= MAX_MQ_SIZE) {
+            delete messagewrapper;
+            return kNullPost;
+        }
+        
+        content.lst_msg.push_back(messagewrapper);
+        content.breaker->notify(lock);
+        return messagewrapper->postid;
+    }
+    
+    bool wait_message(const message_post_t& _message, long _timeoutInMs) {
+        bool is_in_mq = handler2queue(post2handler(_message)) == current_thread_message_queue();
+        
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        const message_queue_t& id = handler2queue(post2handler(_message));
+        auto pos = sq_messagequeue_map.find(id);
+        if (sq_messagequeue_map.end() == pos) return false;
+        message_queue_content& content = pos->second;
+        
+        auto find_it = std::find_if(content.lst_msg.begin(), content.lst_msg.end(), [&_message](const message_wrapper* const &_v) {
+            return _message == _v->postid;
+        });
+        
+        if (find_it == content.lst_msg.end()) {
+            auto find_it = std::find_if(content.lst_runloop_info.begin(), content.lst_runloop_info.end(), [&_message](const runloop_info& _v){ return _message == _v.runing_message_id; });
+            
+            if (find_it != content.lst_runloop_info.end()) {
+                if (is_in_mq) return false;
+                
+                std::shared_ptr<std::condition_variable> running_cond = find_it->runing_cond;
+                if (_timeoutInMs < 0) {
+                    running_cond->wait(lock);
+                } else {
+                    auto ret = running_cond->wait_for(lock, std::chrono::milliseconds(_timeoutInMs));
+                    return ret == std::cv_status::no_timeout;
+                }
+            }
+        } else {
+            if (is_in_mq) {
+                lock.unlock();
+                runloop([&_message](){
+                    message_queue_content& content = sq_messagequeue_map[handler2queue(post2handler(_message))];
+                    return content.lst_msg.end() == std::find_if(content.lst_msg.begin(), content.lst_msg.end(), [&_message](const message_wrapper * const &_v) {
+                        return _message == _v->postid;
+                    });
+                }).Run();
+            } else {
+                if (!((*find_it)->wait_end_cond))(*find_it)->wait_end_cond = std::make_shared<std::condition_variable>();
+                
+                std::shared_ptr<std::condition_variable> wait_end_cond = (*find_it)->wait_end_cond;
+                if (_timeoutInMs < 0) {
+                    wait_end_cond->wait(lock);
+                } else {
+                    auto ret = wait_end_cond->wait_for(lock, std::chrono::milliseconds(_timeoutInMs));
+                    return ret == std::cv_status::no_timeout;
+                }
+            }
+        }
+        return true;
+    }
+    
+    bool found_message(const message_post_t& _message) {
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        const message_queue_t& id = handler2queue(post2handler(_message));
+        
+        auto pos = sq_messagequeue_map.find(id);
+        if (sq_messagequeue_map.end() == pos) return false;
+        
+        message_queue_content& content = pos->second;
+        if (content.lst_runloop_info.empty()) return false;
+        
+        auto find_it = std::find_if(content.lst_runloop_info.begin(), content.lst_runloop_info.end(),
+                                    [&_message](const runloop_info& _v) {
+                                        return _message == _v.runing_message_id;
+                                    });
+        
+        if (find_it != content.lst_runloop_info.end()) { return true; }
+        for (auto it = content.lst_msg.begin(); it != content.lst_msg.end(); ++it)
+        {
+            if (_message == (*it)->postid) { return true; }
+        }
+        
+        return false;
+    }
+    
+    bool cancel_message(const message_post_t& _postid) {
+        if (0 == _postid.reg.queue || 0 == _postid.seq) return false;
+        
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        const message_queue_t& id = _postid.reg.queue;
+        
+        auto pos = sq_messagequeue_map.find(id);
+        if (sq_messagequeue_map.end() == pos) {
+            return false;
+        }
+        
+        message_queue_content& content = pos->second;
+        
+        for (auto it = content.lst_msg.begin(); it != content.lst_msg.end(); ++it)
+        {
+            if (_postid == (*it)->postid) {
+                delete (*it);
+                content.lst_msg.erase(it);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    void cancel_message(const message_handler_t& _handlerid) {
+        
+        // 0==_handlerid.seq for BroadcastMessage
+        if (0 == _handlerid.queue) return;
+        
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        const message_queue_t& id = _handlerid.queue;
+        
+        auto pos = sq_messagequeue_map.find(id);
+        if (sq_messagequeue_map.end() == pos) {
+            //        assert2(false, "%lu", id);
+            return;
+        }
+        
+        message_queue_content& content = pos->second;
+        
+        for (auto it = content.lst_msg.begin(); it != content.lst_msg.end();) {
+            if (_handlerid == (*it)->postid.reg) {
+                delete(*it);
+                it = content.lst_msg.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+    
+    void cancel_message(const message_handler_t& _handlerid, const message_title_t& _title) {
+        
+        // 0==_handlerid.seq for BroadcastMessage
+        if (0 == _handlerid.queue) return;
+        
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        const message_queue_t& id = _handlerid.queue;
+        
+        auto pos = sq_messagequeue_map.find(id);
+        if (sq_messagequeue_map.end() == pos) {
+            return;
+        }
+        
+        message_queue_content& content = pos->second;
+        
+        for (auto it = content.lst_msg.begin(); it != content.lst_msg.end();) {
+            if (_handlerid == (*it)->postid.reg && _title == (*it)->message.title) {
+                delete(*it);
+                it = content.lst_msg.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+    
+    const message_t& running_message() {
+        message_queue_t id = (message_queue_t)pthread_self();
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        
+        auto pos = sq_messagequeue_map.find(id);
+        if (sq_messagequeue_map.end() == pos)
+        {
+            return kNullMessage;
+        }
+        
+        message_t* running_msg = pos->second.lst_runloop_info.back().runing_message;
+        return running_msg? *running_msg: kNullMessage;
+    }
+    
+    message_post_t running_message_id() {
+        message_queue_t id = (message_queue_t)pthread_self();
+        return running_message_id(id);
+    }
+    
+    message_post_t running_message_id(const message_queue_t& _id)
+    {
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        
+        auto pos = sq_messagequeue_map.find(_id);
+        if (sq_messagequeue_map.end() == pos)
+        {
+            return kNullPost;
+        }
+        
+        message_queue_content& content = pos->second;
+        return content.lst_runloop_info.back().runing_message_id;
+    }
+    
+    static void async_invoke_handler(const message_post_t& _id, message_t& _message) {
+        (*linb::any_cast<std::shared_ptr<async_invoke_function>>(_message.body1))();
+    }
+    
+    message_handler_t install_async_handler(const message_queue_t& id)
+    {
+        return install_message_handler(async_invoke_handler, false, id);
+    }
+    
+    static message_queue_t create_message_queue_info(std::shared_ptr<runloop_cond> &_breaker, thread_tid _tid)
+    {
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        
+        message_queue_t id = (message_queue_t)_tid;
+        
+        if (sq_messagequeue_map.end() == sq_messagequeue_map.find(id))
+        {
+            message_queue_content& content = sq_messagequeue_map[id];
+            handler_wrapper* handler = new handler_wrapper(&async_invoke_handler, false, id, make_seq());
+            content.lst_handler.emplace_back(handler);
+            content.invoke_reg = handler->reg;
+            if (_breaker) {
+                content.breaker = _breaker;
+            }
+            else {
+//                content.breaker = std::make_shared<runloop_cond>();
+            }
+        }
+        return id;
+    }
+    
+    static void release_message_queue_info() {
+        message_queue_t id = (message_queue_t)pthread_self();
+        
+        auto pos = sq_messagequeue_map.find(id);
+        if (sq_messagequeue_map.end() != pos) {
+            message_queue_content& content = pos->second;
+            
+            for (auto it = std::begin(content.lst_msg); it != std::end(content.lst_msg); ++it)
+            {
+                delete (*it);
+            }
+            
+            for (auto it = std::begin(content.lst_handler); it != std::end(content.lst_handler); ++it)
+            {
+                delete (*it);
+            }
+            
+            sq_messagequeue_map.erase(id);
+        }
+    }
+    
+    void runloop::Run() {
+        message_queue_t id = (message_queue_t)pthread_self();
+        if (id != 0) {
+            std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+            sq_messagequeue_map[id].lst_runloop_info.emplace_back(runloop_info());
+        }
+        
+        while(true) {
+            std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+            message_queue_content& content = sq_messagequeue_map[id];
+            content.lst_runloop_info.back().runing_message_id = kNullPost;
+            content.lst_runloop_info.back().runing_message = nullptr;
+            content.lst_runloop_info.back().runing_handler.clear();
+            content.lst_runloop_info.back().runing_cond->notify_all();
+            
+            if(duty_func_) duty_func_();
+            
+            if ((content.breakflag || (breaker_func_ && breaker_func_()))) {
+                content.lst_runloop_info.pop_back();
+                if (content.lst_runloop_info.empty())
+                {
+                    release_message_queue_info();
+                }
+                break;
+            }
+            
+            int64_t wait_time = 10 * 60 * 1000;
+            message_wrapper* messagewrapper = nullptr;
+            bool delmessage = true;
+            
+            for (auto it = content.lst_msg.begin(); it != content.lst_msg.end(); ++it)
+            {
+                if (kImmediately == (*it)->timing.type)
+                {
+                    messagewrapper = *it;
+                    content.lst_msg.erase(it);
+                    break;
+                }
+                else if (kAfter == (*it)->timing.type)
+                {
+                    int64_t time_cost = utility::get_tick_span((*it)->record_time);
+                    
+                    if ((*it)->timing.after <= time_cost) {
+                        messagewrapper = *it;
+                        content.lst_msg.erase(it);
+                        break;
+                    } else {
+                        wait_time = std::min(wait_time, (*it)->timing.after - time_cost);
+                    }
+                }
+                else if (kPeriod == (*it)->timing.type)
+                {
+                    if (kAfter == (*it)->period_status) {
+                        int64_t time_cost = utility::get_tick_span((*it)->record_time);
+                        
+                        if ((*it)->timing.after <= time_cost) {
+                            messagewrapper = *it;
+                            (*it)->record_time = utility::get_tick_count();
+                            (*it)->period_status = kPeriod;
+                            delmessage = false;
+                            break;
+                        } else {
+                            wait_time = std::min(wait_time, (*it)->timing.after - time_cost);
+                        }
+                    } else if (kPeriod == (*it)->period_status) {
+                        int64_t time_cost = utility::get_tick_span((*it)->record_time);
+                        
+                        if ((*it)->timing.period <= time_cost) {
+                            messagewrapper = *it;
+                            (*it)->record_time = utility::get_tick_count();
+                            delmessage = false;
+                            break;
+                        } else {
+                            wait_time = std::min(wait_time, (*it)->timing.period - time_cost);
+                        }
+                    } else {
+                        assert(false);
+                    }
+                }
+                else {
+                    assert(false);
+                }
+            }
+            
+            if (nullptr == messagewrapper) {
+                content.breaker->wait(lock, std::chrono::milliseconds(wait_time).count());
+                continue;
+            }
+            
+            std::list<handler_wrapper> fit_handler;
+            for (auto it = content.lst_handler.begin(); it != content.lst_handler.end(); ++it)
+            {
+                if (messagewrapper->postid.reg == (*it)->reg || ((*it)->recvbroadcast && messagewrapper->postid.reg.is_broadcast()))
+                    {
+                        fit_handler.emplace_back(**it);
+                        content.lst_runloop_info.back().runing_handler.emplace_back((*it)->reg);
+                    }
+            }
+            
+            content.lst_runloop_info.back().runing_message_id = messagewrapper->postid;
+            content.lst_runloop_info.back().runing_message = &messagewrapper->message;
+            ino64_t anr_timeout = messagewrapper->message.anr_timeout;
+            lock.unlock();
+            
+            messagewrapper->message.execute_time = utility::get_tick_count();
+            for (auto it = fit_handler.begin(); it != fit_handler.end(); ++it)
+            {
+                (*it).handler(messagewrapper->postid, messagewrapper->message);
+            }
+            
+            if (delmessage) {
+                delete messagewrapper;
+            }
+            
+        }
+    }
+    
+    std::shared_ptr<runloop_cond> runloop_cond::current_cond() {
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        message_queue_t id = (message_queue_t)pthread_self();
+        
+        auto pos = sq_messagequeue_map.find(id);
+        if (sq_messagequeue_map.end() != pos) {
+            message_queue_content& content = pos->second;
+            return content.breaker;
+        } else {
+            return std::shared_ptr<runloop_cond> ();
+        }
+    }
+    
+    message_queue_creater::message_queue_creater(bool _iscreate, const char* _msg_queue_name)
+    : message_queue_creater(std::shared_ptr<runloop_cond>(), _iscreate, _msg_queue_name)
+    {}
+    
+    message_queue_creater::message_queue_creater(std::shared_ptr<runloop_cond> _breaker, bool _iscreate, const char* _msg_queue_name)
+    : thread_(std::bind(&::excelsecu::message_queue_creater::__thread_runloop, this), _msg_queue_name)
+    , message_queue_id_(k_invalid_queue_id), breaker_(_breaker) {
+        if (_iscreate)
+            create_message_queue();
+    }
+    
+    message_queue_creater::~message_queue_creater() {
+        cancel_and_wait();
+    }
+    
+    void message_queue_creater::__thread_runloop() {
+         std::unique_lock<std::mutex> lock(message_queue_mutex_);
+        lock.unlock();
+        
+        runloop().Run();
+        
+    }
+    
+    message_queue_t message_queue_creater::get_message_queue() {
+        return message_queue_id_;
+    }
+    
+    message_queue_t message_queue_creater::create_message_queue() {
+        std::unique_lock<std::mutex> lock(message_queue_mutex_);
+   
+//        if (thread_.is_runing()) return message_queue_id_;
+//
+        if (0 != thread_.start()) { return k_invalid_queue_id;}
+        message_queue_id_ = create_message_queue_info(breaker_, thread_.tid());
+//
+        return message_queue_id_;
+    }
+    
+    void message_queue_creater::cancel_and_wait() {
+         std::unique_lock<std::mutex> lock(message_queue_mutex_);
+        
+        if (k_invalid_queue_id == message_queue_id_) return;
+        
+        break_message_queue_runloop(message_queue_id_);
+        message_queue_id_ = k_invalid_queue_id;
+        lock.unlock();
+//        if(ThreadUtil::currentthreadid() != thread_.tid()) {
+//            thread_.join();
+//        }
+    }
+    
+    message_queue_t message_queue_creater::create_new_message_queue(std::shared_ptr<runloop_cond> _breaker, thread_tid _tid) {
+        return (create_message_queue_info(_breaker, _tid));
+    }
+    
+    message_queue_t message_queue_creater::create_new_message_queue(std::shared_ptr<runloop_cond> _breaker, const char* _messagequeue_name) {
+        
+        SpinLock* sp = new SpinLock;
+        std::thread thread(std::bind(&__thread_new_runloop, sp), _messagequeue_name, true);
+        //    thread.outside_join();
+        
+        sp->lock();
+//        if (0 != thread.start()) {
+//            (*sp).unlock();
+//            delete sp;
+//            return k_invalid_queue_id;
+//        }
+//
+//        message_queue_t id = create_message_queue_info(_breaker, thread.tid());
+//        return id;
+        return 0;
+    }
+    
+    message_queue_t message_queue_creater::create_new_message_queue(const char* _messagequeue_name) {
+        return create_new_message_queue(std::shared_ptr<runloop_cond>(), _messagequeue_name);
+    }
+    
+    void message_queue_creater::release_new_message_queue(message_queue_t _messagequeue_id) {
+        
+        if (k_invalid_queue_id == _messagequeue_id) return;
+        
+        break_message_queue_runloop(_messagequeue_id);
+        wait_for_running_lock_end(_messagequeue_id);
+//        pthread_join((pthread_t)_messagequeue_id, NULL);
+        ThreadUtil::join((thread_tid)_messagequeue_id);
+    }
+    
+    void message_queue_creater::__thread_new_runloop(SpinLock* _sp) {
+        (*_sp).unlock();
+        delete _sp;
+        
+        runloop().Run();
+    }
+    
+    message_queue_t GetDefMessageQueue() {
+        static message_queue_creater* s_defmessagequeue = new message_queue_creater;
+        return s_defmessagequeue->create_message_queue();
+    }
+    
+    message_queue_t GetDefTaskQueue() {
+        static message_queue_creater* s_deftaskqueue = new message_queue_creater;
+        return s_deftaskqueue->create_message_queue();
+    }
+    
+    message_handler_t DefAsyncInvokeHandler(const message_queue_t& _messagequeue) {
+        std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
+        const message_queue_t& id = _messagequeue;
+        
+        auto pos = sq_messagequeue_map.find(id);
+        if (sq_messagequeue_map.end() == pos) return kNullHandler;
+        
+        message_queue_content& content = pos->second;
+        return content.invoke_reg;
+    }
+    
+    scope_register::scope_register(const message_handler_t& _reg)
+    : m_reg(new message_handler_t(_reg)) {}
+    
+    scope_register::~scope_register() {
+        cancel();
+        delete m_reg;
+    }
+    
+    const message_handler_t& scope_register::get() const
+    {return *m_reg;}
+    
+    void scope_register::cancel() const {
+        uninstall_message_handler(*m_reg);
+        cancel_message(*m_reg);
+    }
+    void scope_register::cancel_and_wait() const {
+        cancel();
+        wait_for_running_lock_end(*m_reg);
     }
 }

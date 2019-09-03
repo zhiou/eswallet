@@ -1414,8 +1414,8 @@ JSON_HEDLEY_DIAGNOSTIC_POP
     #define JSON_HEDLEY_C_DECL
 #endif
 
-#if defined(JSON_HEDLEY_STATIC_ASSERT)
-    #undef JSON_HEDLEY_STATIC_ASSERT
+#if defined(JSON_HEDLEY_STATIC_assert)
+    #undef JSON_HEDLEY_STATIC_assert
 #endif
 #if \
   !defined(__cplusplus) && ( \
@@ -1425,16 +1425,16 @@ JSON_HEDLEY_DIAGNOSTIC_POP
       JSON_HEDLEY_INTEL_VERSION_CHECK(13,0,0) || \
       defined(_Static_assert) \
     )
-#  define JSON_HEDLEY_STATIC_ASSERT(expr, message) _Static_assert(expr, message)
+#  define JSON_HEDLEY_STATIC_assert(expr, message) _Static_assert(expr, message)
 #elif \
   (defined(__cplusplus) && (__cplusplus >= 201703L)) || \
   JSON_HEDLEY_MSVC_VERSION_CHECK(16,0,0) || \
   (defined(__cplusplus) && JSON_HEDLEY_TI_VERSION_CHECK(8,3,0))
-#  define JSON_HEDLEY_STATIC_ASSERT(expr, message) static_assert(expr, message)
+#  define JSON_HEDLEY_STATIC_assert(expr, message) static_assert(expr, message)
 #elif defined(__cplusplus) && (__cplusplus >= 201103L)
-#  define JSON_HEDLEY_STATIC_ASSERT(expr, message) static_assert(expr)
+#  define JSON_HEDLEY_STATIC_assert(expr, message) static_assert(expr)
 #else
-#  define JSON_HEDLEY_STATIC_ASSERT(expr, message)
+#  define JSON_HEDLEY_STATIC_assert(expr, message)
 #endif
 
 #if defined(JSON_HEDLEY_CONST_CAST)
@@ -22656,7 +22656,7 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef JSON_HEDLEY_RESTRICT
 #undef JSON_HEDLEY_RETURNS_NON_NULL
 #undef JSON_HEDLEY_SENTINEL
-#undef JSON_HEDLEY_STATIC_ASSERT
+#undef JSON_HEDLEY_STATIC_assert
 #undef JSON_HEDLEY_STATIC_CAST
 #undef JSON_HEDLEY_STRINGIFY
 #undef JSON_HEDLEY_STRINGIFY_EX
