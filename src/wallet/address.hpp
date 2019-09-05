@@ -94,6 +94,16 @@ namespace wallet {
         }
         throw tsm_err("unsuppored coin type or address", ERROR_COMMON_FUNCTION_NOT_SUPPORT);
     }
+        
+    bytestream parse_eos_private_key(const std::string &prikey)
+    {
+        std::vector<unsigned char> decoded;
+        if(DecodeBase58Check(prikey, decoded))
+        {
+            return bytestream(decoded).split(1, 0x20);
+        }
+        throw tsm_err("invalid base58 code", ERROR_COMMON_INVALID_DATA);
+    }
 }
 }
 }

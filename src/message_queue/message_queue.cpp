@@ -23,6 +23,10 @@ namespace excelsecu {
         return ++s_seq;
     }
     
+    static message_queue_t tid2mqid(thread_tid _tid) {
+        return *(long*)&(*_tid);
+    }
+    
 struct message_wrapper {
     message_wrapper(const message_handler_t& _handlerid, const message_t& _message, const message_timing& _timing, unsigned int _seq)
     : message(_message), timing(_timing)
@@ -76,9 +80,9 @@ struct runloop_info {
 
 class Cond: public runloop_cond {
 public:
-    Cond() = default;
+    Cond(){};
 public:
-    const std::type_info& type() const {
+    virtual const std::type_info& type() const {
         return typeid(Cond);
     }
     
@@ -143,18 +147,20 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
     
     message_queue_t current_thread_message_queue() {
         std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
-        message_queue_t id = (message_queue_t)pthread_self();
-        
-        if (sq_messagequeue_map.end() == sq_messagequeue_map.find(id))  id = k_invalid_queue_id;
+        message_queue_t id = tid2mqid(pthread_self());
+       
+        if (sq_messagequeue_map.end() == sq_messagequeue_map.find(id)) {
+            id = k_invalid_queue_id;
+        }
         
         return id;
     }
     
-    message_queue_t tid_to_message_queue(uint64_t tid)
+    message_queue_t tid_to_message_queue(thread_tid tid)
     {
         std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
         
-        message_queue_t id = (message_queue_t)tid;
+        message_queue_t id = tid2mqid(tid);
         
         if (sq_messagequeue_map.end() == sq_messagequeue_map.find(id)) id = k_invalid_queue_id;
         
@@ -566,7 +572,7 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
     }
     
     const message_t& running_message() {
-        message_queue_t id = (message_queue_t)pthread_self();
+        message_queue_t id = tid2mqid(pthread_self());
         std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
         
         auto pos = sq_messagequeue_map.find(id);
@@ -580,7 +586,7 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
     }
     
     message_post_t running_message_id() {
-        message_queue_t id = (message_queue_t)pthread_self();
+        message_queue_t id = tid2mqid(pthread_self());
         return running_message_id(id);
     }
     
@@ -610,8 +616,8 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
     static message_queue_t create_message_queue_info(std::shared_ptr<runloop_cond> &_breaker, thread_tid _tid)
     {
         std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
-        
-        message_queue_t id = (message_queue_t)_tid;
+
+        message_queue_t id = tid2mqid(_tid);
         
         if (sq_messagequeue_map.end() == sq_messagequeue_map.find(id))
         {
@@ -623,14 +629,14 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
                 content.breaker = _breaker;
             }
             else {
-//                content.breaker = std::make_shared<runloop_cond>();
+                content.breaker = std::make_shared<Cond>();
             }
         }
         return id;
     }
     
     static void release_message_queue_info() {
-        message_queue_t id = (message_queue_t)pthread_self();
+        message_queue_t id = tid2mqid(pthread_self());
         
         auto pos = sq_messagequeue_map.find(id);
         if (sq_messagequeue_map.end() != pos) {
@@ -651,7 +657,7 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
     }
     
     void runloop::Run() {
-        message_queue_t id = (message_queue_t)pthread_self();
+        message_queue_t id = tid2mqid(pthread_self());;
         if (id != 0) {
             std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
             sq_messagequeue_map[id].lst_runloop_info.emplace_back(runloop_info());
@@ -751,7 +757,7 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
             
             content.lst_runloop_info.back().runing_message_id = messagewrapper->postid;
             content.lst_runloop_info.back().runing_message = &messagewrapper->message;
-            ino64_t anr_timeout = messagewrapper->message.anr_timeout;
+            int64_t anr_timeout = messagewrapper->message.anr_timeout;
             lock.unlock();
             
             messagewrapper->message.execute_time = utility::get_tick_count();
@@ -769,7 +775,7 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
     
     std::shared_ptr<runloop_cond> runloop_cond::current_cond() {
         std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
-        message_queue_t id = (message_queue_t)pthread_self();
+        message_queue_t id = tid2mqid(pthread_self());
         
         auto pos = sq_messagequeue_map.find(id);
         if (sq_messagequeue_map.end() != pos) {
@@ -810,7 +816,7 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
     message_queue_t message_queue_creater::create_message_queue() {
         std::unique_lock<std::mutex> lock(message_queue_mutex_);
    
-//        if (thread_.is_runing()) return message_queue_id_;
+        if (thread_.is_runing()) return message_queue_id_;
 //
         if (0 != thread_.start()) { return k_invalid_queue_id;}
         message_queue_id_ = create_message_queue_info(breaker_, thread_.tid());
@@ -826,9 +832,9 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
         break_message_queue_runloop(message_queue_id_);
         message_queue_id_ = k_invalid_queue_id;
         lock.unlock();
-//        if(ThreadUtil::currentthreadid() != thread_.tid()) {
-//            thread_.join();
-//        }
+        if(ThreadUtil::current_thread_id() != thread_.tid()) {
+            thread_.join();
+        }
     }
     
     message_queue_t message_queue_creater::create_new_message_queue(std::shared_ptr<runloop_cond> _breaker, thread_tid _tid) {
@@ -838,19 +844,18 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
     message_queue_t message_queue_creater::create_new_message_queue(std::shared_ptr<runloop_cond> _breaker, const char* _messagequeue_name) {
         
         SpinLock* sp = new SpinLock;
-        std::thread thread(std::bind(&__thread_new_runloop, sp), _messagequeue_name, true);
+        Thread thread(std::bind(&__thread_new_runloop, sp), _messagequeue_name, true);
         //    thread.outside_join();
         
         sp->lock();
-//        if (0 != thread.start()) {
-//            (*sp).unlock();
-//            delete sp;
-//            return k_invalid_queue_id;
-//        }
-//
-//        message_queue_t id = create_message_queue_info(_breaker, thread.tid());
-//        return id;
-        return 0;
+        if (0 != thread.start()) {
+            (*sp).unlock();
+            delete sp;
+            return k_invalid_queue_id;
+        }
+
+        message_queue_t id = create_message_queue_info(_breaker, thread.tid());
+        return id;
     }
     
     message_queue_t message_queue_creater::create_new_message_queue(const char* _messagequeue_name) {
@@ -863,7 +868,6 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
         
         break_message_queue_runloop(_messagequeue_id);
         wait_for_running_lock_end(_messagequeue_id);
-//        pthread_join((pthread_t)_messagequeue_id, NULL);
         ThreadUtil::join((thread_tid)_messagequeue_id);
     }
     
@@ -874,17 +878,17 @@ static std::map<message_queue_t, message_queue_content>& messagequeue_map() {
         runloop().Run();
     }
     
-    message_queue_t GetDefMessageQueue() {
+    message_queue_t get_def_message_queue() {
         static message_queue_creater* s_defmessagequeue = new message_queue_creater;
         return s_defmessagequeue->create_message_queue();
     }
     
-    message_queue_t GetDefTaskQueue() {
+    message_queue_t get_def_task_queue() {
         static message_queue_creater* s_deftaskqueue = new message_queue_creater;
         return s_deftaskqueue->create_message_queue();
     }
     
-    message_handler_t DefAsyncInvokeHandler(const message_queue_t& _messagequeue) {
+    message_handler_t def_async_invoke_handler(const message_queue_t& _messagequeue) {
         std::unique_lock<std::mutex> lock(sg_messagequeue_map_mutex);
         const message_queue_t& id = _messagequeue;
         

@@ -241,8 +241,8 @@ namespace excelsecu {
     
     public:
         virtual const std::type_info& type() const = 0;
-        virtual void wait(std::unique_lock<std::mutex>& _lock, long _millisecond) const = 0;
-        virtual void notify(std::unique_lock<std::mutex>& _lock) const = 0;
+        virtual void wait(std::unique_lock<std::mutex>& _lock, long _millisecond)  = 0;
+        virtual void notify(std::unique_lock<std::mutex>& _lock) = 0;
         
     private:
         runloop_cond(const runloop_cond&);

@@ -15,7 +15,7 @@
 
 namespace excelsecu {
     namespace utility {
-        std::vector<std::string> split(const std::string& s, char delimiter)
+        inline std::vector<std::string> split(const std::string& s, char delimiter)
         {
             std::vector<std::string> tokens;
             std::string token;
@@ -27,14 +27,14 @@ namespace excelsecu {
             return tokens;
         }
         
-        uint64_t get_tick_count() {
+        inline uint64_t get_tick_count() {
             auto d = std::chrono::steady_clock::now().time_since_epoch();
             
             std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(d);
             return timestamp.count();
         }
         
-        uint64_t get_tick_span(uint64_t _old_tick)
+        inline uint64_t get_tick_span(uint64_t _old_tick)
         {
             uint64_t cur_tick = get_tick_count();
             if (_old_tick > cur_tick) return 0;

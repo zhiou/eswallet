@@ -55,7 +55,7 @@
 		9FF6241D22CC59750056A5DC /* pkcs7.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6241B22CC59750056A5DC /* pkcs7.cpp */; };
 		9FF6242022CC5BA10056A5DC /* pubkey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6241E22CC5BA10056A5DC /* pubkey.cpp */; };
 		9FF6242322CC60560056A5DC /* prikey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6242122CC60560056A5DC /* prikey.cpp */; };
-		9FF78A26231E61FE001F6429 /* MsgQueueTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78A25231E61FE001F6429 /* MsgQueueTest.m */; };
+		9FF78A26231E61FE001F6429 /* MsgQueueTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78A25231E61FE001F6429 /* MsgQueueTest.mm */; };
 		FD59EC2D22F7402600856C2C /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD59EC2B22F7402600856C2C /* base64.cpp */; };
 		FD59EC3022F7403300856C2C /* base58.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD59EC2E22F7403300856C2C /* base58.cpp */; };
 		FD59EC3322F7403F00856C2C /* base32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD59EC3122F7403F00856C2C /* base32.cpp */; };
@@ -227,7 +227,7 @@
 		9FF6241F22CC5BA10056A5DC /* pubkey.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = pubkey.hpp; sourceTree = "<group>"; };
 		9FF6242122CC60560056A5DC /* prikey.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = prikey.cpp; sourceTree = "<group>"; };
 		9FF6242222CC60560056A5DC /* prikey.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = prikey.hpp; sourceTree = "<group>"; };
-		9FF78A25231E61FE001F6429 /* MsgQueueTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MsgQueueTest.m; sourceTree = "<group>"; };
+		9FF78A25231E61FE001F6429 /* MsgQueueTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MsgQueueTest.mm; sourceTree = "<group>"; };
 		FD59EC1922F7207900856C2C /* hash.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = hash.hpp; sourceTree = "<group>"; };
 		FD59EC1D22F72CE800856C2C /* sm2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = sm2.hpp; sourceTree = "<group>"; };
 		FD59EC2B22F7402600856C2C /* base64.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = base64.cpp; sourceTree = "<group>"; };
@@ -688,7 +688,7 @@
 			children = (
 				FDE2D14A22F0B57C00EF94D3 /* BasicTest.mm */,
 				9F622D92231D05F500622B42 /* WalletTest.mm */,
-				9FF78A25231E61FE001F6429 /* MsgQueueTest.m */,
+				9FF78A25231E61FE001F6429 /* MsgQueueTest.mm */,
 				FDE2D14C22F0B57C00EF94D3 /* Info.plist */,
 			);
 			path = TransmitTests;
@@ -870,7 +870,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9FF78A26231E61FE001F6429 /* MsgQueueTest.m in Sources */,
+				9FF78A26231E61FE001F6429 /* MsgQueueTest.mm in Sources */,
 				FDE2D14B22F0B57C00EF94D3 /* BasicTest.mm in Sources */,
 				9F622D93231D05F500622B42 /* WalletTest.mm in Sources */,
 			);

@@ -399,11 +399,68 @@ public:
     }
     
     void import_key(coin coin_type, json key_info) {
-        
+        if (coin_type != coin::eos)
+        {
+            LOG_ERROR("coin type don't support to add permission");
+            throw tsm_err("coin type don't support to add permission", ERROR_COMMON_FUNCTION_NOT_SUPPORT);
+        }
+        try {
+            select(coin_type);
+            
+            uint8_t index = key_info["accountIndex"];
+            uint32_t account_index = 0x80000000 | index;
+            auto prikey_buf = address::parse_eos_private_key(key_info["key"]);
+            auto name_encoded = fcbuffer::encode_name(key_info["address"]);
+            auto type_encoded = fcbuffer::encode_name(key_info["type"]);
+            
+            auto apdu = bytestream("8070010000");
+            auto payload = bytestream();
+            payload.append(name_encoded);
+            payload.append(type_encoded);
+            payload.append(account_index);
+            payload += prikey_buf;
+            apdu += payload;
+            
+            apdu[4] = payload.length();
+            m_trans->send(apdu);
+        }
+        catch (const es_error& e)
+        {
+             LOG_ERROR("import key failed" + e.what());
+        }
     }
     
     void remove_key(coin coin_type, json key_info) {
+        if (coin_type != coin::eos)
+        {
+            LOG_ERROR("coin type don't support to add permission");
+            throw tsm_err("coin type don't support to add permission", ERROR_COMMON_FUNCTION_NOT_SUPPORT);
+        }
         
+        try {
+            select(coin_type);
+            
+            uint8_t index = key_info["accountIndex"];
+            uint32_t account_index = 0x80000000 | index;
+            auto prikey_buf = address::parse_eos_private_key(key_info["key"]);
+            auto name_encoded = fcbuffer::encode_name(key_info["address"]);
+            auto type_encoded = fcbuffer::encode_name(key_info["type"]);
+            
+            auto apdu = bytestream("8072010000");
+            auto payload = bytestream();
+            payload.append(name_encoded);
+            payload.append(type_encoded);
+            payload.append(account_index);
+            payload += prikey_buf;
+            apdu += payload;
+            
+            apdu[4] = payload.length();
+            m_trans->send(apdu);
+        }
+        catch (const es_error& e)
+        {
+            LOG_ERROR("remove key failed" + e.what());
+        }
     }
     
     void set_amount_limit(coin coin_type, uint64_t amount_limit)
@@ -472,6 +529,87 @@ public:
     }
     
     json sign_transaction(coin coin_type, json tx) {
+        
+        auto build_sign = [&](const bytestream& path, const bytestream& change_path, const bytestream& msg) {
+            auto data_length = 2 + path.length() + 2 + change_path.length() + 3 + msg.length();
+            
+            auto payload = bytestream(data_length);
+            
+            int index = 0;
+            payload[index++] = 0xC0;
+            payload[index++] = path.length() / 4;
+            payload += path;
+            index += path.length();
+            
+            payload[index++] = 0xC1;
+            payload[index++] = change_path.length() / 4;
+            payload += change_path;
+            index += change_path.length();
+            
+            payload[index++] = 0xC2;
+            payload[index++] = msg.length() >> 8;
+            payload[index++] = msg.length();
+            payload += msg;
+            index += change_path.length();
+            
+            return payload;
+        };
+        
+        auto send_sign = [&](const bytestream& data, bool is_compressed) {
+            uint8_t compress_change = 0x08;
+            
+            if (data.length() <= 0xFF)
+            {
+                auto apdu_head = bytestream("8048030000");
+                if (is_compressed) apdu_head[3] |= compress_change;
+                
+                apdu_head[4] = data.length();
+                auto apdu = apdu_head + data;
+                return m_trans->send(apdu);
+            } else {
+                auto remain_len = data.length();
+                
+                while(true) {
+                    if (remain_len <= 0xFF) {
+                        auto apdu_head = bytestream("8048020000");
+                        apdu_head[3] |= compress_change;
+                        apdu_head[4] = remain_len;
+                        auto offset = data.length() - remain_len;
+                        
+                        auto apdu = apdu_head + data.split(offset, remain_len);
+                        return m_trans->send(apdu);
+                    }
+                    else if (remain_len == data.length())
+                    {
+                        auto apdu_head = bytestream("80480100FF");
+                        auto apdu = apdu_head + data.split(0, 0xFF);
+                        m_trans->send(apdu);
+                    } else {
+                        auto apdu_head = bytestream("80480000FF");
+                        apdu_head[3] |= compress_change;
+                        auto offset = data.length() - remain_len;
+                        
+                        auto apdu = apdu_head + data.split(offset, 0xFF);
+                        m_trans->send(apdu);
+                    }
+                    remain_len -= 0xFF;
+                }
+            }
+        };
+        
+        auto parse_sign_resp = [&](coin coin_type, const bytestream& resp)
+        {
+            bool is_eos = (coin_type == coin::eos);
+            int offset = is_eos ? 1 : 0;
+            int remain = is_eos ? resp[0] : 0;
+      
+            auto r = resp.split(offset, 0x20);
+            auto s = resp.split(0x20 + offset, 0x20);
+            auto pubkey = resp.split(0x40 + offset, 0x40);
+            auto v = resp[0x80 + offset];
+            return std::make_tuple(remain, v, r, s, pubkey);
+        };
+        
         return json();
     }
 private:

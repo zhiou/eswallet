@@ -177,7 +177,8 @@ namespace excelsecu {
             runable_ref_->AddRef();
             
             int res = pthread_attr_init(&attr_);
-         
+            assert(res == 0);
+            
             if (_thread_name) strncpy(runable_ref_->thread_name, _thread_name, sizeof(runable_ref_->thread_name));
         }
         
@@ -188,12 +189,14 @@ namespace excelsecu {
             runable_ref_->AddRef();
             
             int res = pthread_attr_init(&attr_);
+            assert(res == 0);
             
             if (_thread_name) strncpy(runable_ref_->thread_name, _thread_name, sizeof(runable_ref_->thread_name));
         }
         
         virtual ~Thread() {
             int res = pthread_attr_destroy(&attr_);
+            assert(res == 0);
             
             std::unique_lock<SpinLock> lock(runable_ref_->splock);
             if (0 != runable_ref_->tid && !runable_ref_->isjoined) pthread_detach(runable_ref_->tid);
@@ -205,7 +208,7 @@ namespace excelsecu {
             
             if (_newone) *_newone = false;
             
-            if (isruning())return 0;
+            if (is_runing())return 0;
             if (0 != runable_ref_->tid && !runable_ref_->isjoined) pthread_detach(runable_ref_->tid);
             
             assert(runable_ref_->target);
@@ -232,7 +235,7 @@ namespace excelsecu {
             
             if (_newone) *_newone = false;
             
-            if (isruning())return 0;
+            if (is_runing())return 0;
             if (0 != runable_ref_->tid && !runable_ref_->isjoined) pthread_detach(runable_ref_->tid);
             
             delete runable_ref_->target;
@@ -258,7 +261,7 @@ namespace excelsecu {
         int start_after(long after) {
             std::unique_lock<SpinLock> lock(runable_ref_->splock);
             
-            if (isruning())return 0;
+            if (is_runing())return 0;
             if (0 != runable_ref_->tid && !runable_ref_->isjoined) pthread_detach(runable_ref_->tid);
             
             assert(runable_ref_->target);
@@ -285,7 +288,7 @@ namespace excelsecu {
 //            SpinLock lock(runable_ref_->splock);
             std::unique_lock<SpinLock> lock(runable_ref_->splock);
             
-            if (!isruning()) return;
+            if (!is_runing()) return;
             
             runable_ref_->iscanceldelaystart = true;
             runable_ref_->condtime.notify_all();
@@ -294,7 +297,7 @@ namespace excelsecu {
         int start_periodic(long after, long periodic) { // ms
             std::unique_lock<SpinLock> lock(runable_ref_->splock);
             
-            if (isruning()) return 0;
+            if (is_runing()) return 0;
             if (0 != runable_ref_->tid && !runable_ref_->isjoined) pthread_detach(runable_ref_->tid);
             
             assert(runable_ref_->target);
@@ -322,7 +325,7 @@ namespace excelsecu {
         void cancel_periodic() {
             std::unique_lock<SpinLock> lock(runable_ref_->splock);
             
-            if (!isruning()) return;
+            if (!is_runing()) return;
             
             runable_ref_->iscanceldelaystart = true;
             runable_ref_->condtime.notify_all();
@@ -336,7 +339,7 @@ namespace excelsecu {
             
             if (tid() == ThreadUtil::current_thread_id()) return EDEADLK;
             
-            if (isruning()) {
+            if (is_runing()) {
                 runable_ref_->isjoined = true;
                 lock.unlock();
                 ret = pthread_join(tid(), 0);
@@ -349,7 +352,7 @@ namespace excelsecu {
         int kill(int sig) const {
             std::unique_lock<SpinLock> lock(runable_ref_->splock);
             
-            if (!isruning()) return ESRCH;
+            if (!is_runing()) return ESRCH;
             
             if (!runable_ref_->isinthread) {
                 runable_ref_->killsig = sig;
@@ -381,7 +384,7 @@ namespace excelsecu {
             return runable_ref_->tid;
         }
         
-        bool isruning() const {
+        bool is_runing() const {
             return !runable_ref_->isended;
         }
         
@@ -389,13 +392,14 @@ namespace excelsecu {
             if (_stacksize == 0) return;
             
             int res = pthread_attr_setstacksize(&attr_, _stacksize);
+            assert(res == 0);
            
         }
         
         size_t stack_size() const {
             size_t _stacksize = 0;
             int res = pthread_attr_getstacksize(&attr_, &_stacksize);
-            
+            assert(res == 0);
             return _stacksize;
         }
         

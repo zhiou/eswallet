@@ -152,6 +152,7 @@ namespace excelsecu {
         }
         eventbus(const eventbus&);
         eventbus& operator=(const eventbus&);
+        
     private:
         using handler_list = std::list<event_handler*>;
         std::unordered_map<std::type_index, handler_list*> m_handlers;
