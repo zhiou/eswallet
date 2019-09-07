@@ -10,9 +10,7 @@
 #define session_key_hpp
 
 namespace excelsecu {
-    class session_key {
-        
-    };
-}
+class session_key {};
+} // namespace excelsecu
 
 #endif /* session_key_hpp */

@@ -9,8 +9,6 @@
 #pragma once
 
 namespace excelsecu {
-    namespace pkcs7 {
-        
-    }
-   
-}
+namespace pkcs7 {}
+
+} // namespace excelsecu

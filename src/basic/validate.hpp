@@ -11,7 +11,7 @@
 #include <string>
 
 namespace excelsecu {
-    class configure;
-    bool is_valid(const std::string &sn);
-    bool is_valid(const configure &config);
-}
+class configure;
+bool is_valid(const std::string &sn);
+bool is_valid(const configure &config);
+} // namespace excelsecu

@@ -7,13 +7,9 @@
 //
 
 #include "device.hpp"
-#include "validate.hpp"
 #include "EsDriver.h"
-#include "configure.hpp"
 #include "authenticator.hpp"
+#include "configure.hpp"
+#include "validate.hpp"
 
-
-namespace excelsecu {
-
-    
-}
+namespace excelsecu {}

@@ -6,15 +6,10 @@
 //  Copyright © 2019 zzstudio. All rights reserved.
 //
 
-#include "transmit.hpp"
+#include "EsDriver.h"
 #include "authenticator.hpp"
 #include "bytestream.hpp"
 #include "configure.hpp"
-#include "EsDriver.h"
+#include "transmit.hpp"
 
-namespace excelsecu {
-
-    
-}
-
-
+namespace excelsecu {}

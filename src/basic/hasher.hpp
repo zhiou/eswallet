@@ -12,9 +12,8 @@
 
 namespace excelsecu {
 
-    
-    class hasher {
-    public:
-        virtual bytestream hash(const bytestream&) const = 0;
-    };
-}
+class hasher {
+public:
+  virtual bytestream hash(const bytestream &) const = 0;
+};
+} // namespace excelsecu

@@ -7,14 +7,9 @@
 //
 
 #include "transmit.hpp"
+#include "EsDriver.h"
 #include "authenticator.hpp"
 #include "bytestream.hpp"
 #include "configure.hpp"
-#include "EsDriver.h"
 
-namespace excelsecu {
-
-    
-}
-
-
+namespace excelsecu {}

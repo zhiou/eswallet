@@ -11,19 +11,19 @@
 #include "bytestream.hpp"
 
 namespace excelsecu {
-    namespace sm3 {
-        bytestream hash(const bytestream& msg);
-    }
-    
-    namespace sha256 {
-        bytestream hash(const bytestream& msg);
-    }
-    
-    namespace ripemd160 {
-        bytestream hash(const bytestream& msg);
-    }
-    
-    namespace keccak256 {
-        bytestream hash(const bytestream& msg);
-    }
+namespace sm3 {
+bytestream hash(const bytestream &msg);
 }
+
+namespace sha256 {
+bytestream hash(const bytestream &msg);
+}
+
+namespace ripemd160 {
+bytestream hash(const bytestream &msg);
+}
+
+namespace keccak256 {
+bytestream hash(const bytestream &msg);
+}
+} // namespace excelsecu

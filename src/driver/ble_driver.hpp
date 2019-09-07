@@ -9,24 +9,25 @@
 #ifndef ble_driver_hpp
 #define ble_driver_hpp
 
-#include <string>
-#include <functional>
 #include "EsDriver.h"
+#include <functional>
+#include <string>
 
 namespace excelsecu {
-    
-    class ble_driver {
-    public:
-        static bool connect(const std::string &sn);
-        
-        static bool disconnect();
-        
-        static bool isconnected();
-        
-        static bool send(unsigned char* pu1Send, unsigned int u4SendLen, unsigned char* pu1Recv, unsigned int* pu4RecvLen);
-        
-        static void set_callback(FunPtlDevChange callback);
-    };
-}
+
+class ble_driver {
+public:
+  static bool connect(const std::string &sn);
+
+  static bool disconnect();
+
+  static bool isconnected();
+
+  static bool send(unsigned char *pu1Send, unsigned int u4SendLen,
+                   unsigned char *pu1Recv, unsigned int *pu4RecvLen);
+
+  static void set_callback(FunPtlDevChange callback);
+};
+} // namespace excelsecu
 
 #endif /* ble_driver_hpp */
