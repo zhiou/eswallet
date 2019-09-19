@@ -13,6 +13,7 @@ function format() {
         then
           # echo $file
           clang-format -i $file
+          chmod 777 $file
         fi
     fi
   done

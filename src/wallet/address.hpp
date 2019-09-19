@@ -91,6 +91,46 @@ bytestream parse_eos_private_key(const std::string &prikey) {
   }
   throw tsm_err("invalid base58 code", ERROR_COMMON_INVALID_DATA);
 }
+
+// TODO
+std::string make_output_script(coin coin_type, const std::string &address) {
+    auto check_btc_address = [&address]() {
+        std::vector<unsigned char> vch_ret;
+        if (DecodeBase58Check(address, vch_ret))
+        {
+            bytestream buffer(vch_ret);
+            if (buffer.length() == 21) {
+                unsigned char network = buffer[0];
+                switch (network) {
+                    case 0:
+                        return "p2pkh";
+                    case 0x05:
+                        return "p2sh";
+                    case 0x6F:
+                        return "p2pkh";
+                    case 0xC4:
+                        return "p2sh";
+                }
+            }
+        }
+        return "";
+    };
+    
+    std::string type = check_btc_address();
+    auto addr_hex = address::to_buffer(address).hex_str();
+    if (type == "p2pk") {
+        return "21" + addr_hex + "AC";
+    }
+    else if (type == "p2pkh") {
+        return "76A914" + addr_hex + "88AC";
+    }
+    else if (type == "p2sh") {
+        return "A914" + addr_hex + "87";
+    }
+    
+  return "";
+}
+
 } // namespace address
 } // namespace wallet
 } // namespace excelsecu

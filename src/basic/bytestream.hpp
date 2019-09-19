@@ -61,22 +61,32 @@ public:
   }
 
 public:
+    
+    bytestream& little_ending() {
+        std::reverse(m_mem->begin(), m_mem->end());
+        return *this;
+    }
 public:
-  void append(uint8_t ut) { m_mem->emplace_back(ut); }
-
-  void append(uint16_t ut) {
-    m_mem->emplace_back((ut >> 8) & 0xFF);
-    m_mem->emplace_back(ut & 0xFF);
+  bytestream& append(uint8_t ut) {
+      m_mem->emplace_back(ut);
+      return *this;
   }
 
-  void append(uint32_t ut) {
+  bytestream& append(uint16_t ut) {
+    m_mem->emplace_back((ut >> 8) & 0xFF);
+    m_mem->emplace_back(ut & 0xFF);
+      return *this;
+  }
+
+  bytestream& append(uint32_t ut) {
     m_mem->emplace_back((ut >> 24) & 0xFF);
     m_mem->emplace_back((ut >> 16) & 0xFF);
     m_mem->emplace_back((ut >> 8) & 0xFF);
     m_mem->emplace_back(ut & 0xFF);
+      return *this;
   }
 
-  void append(uint64_t ut) {
+  bytestream& append(uint64_t ut) {
     m_mem->emplace_back((ut >> 56) & 0xFF);
     m_mem->emplace_back((ut >> 48) & 0xFF);
     m_mem->emplace_back((ut >> 40) & 0xFF);
@@ -85,10 +95,11 @@ public:
     m_mem->emplace_back((ut >> 16) & 0xFF);
     m_mem->emplace_back((ut >> 8) & 0xFF);
     m_mem->emplace_back(ut & 0xFF);
+      return *this;
   }
 
   uint32_t readUInt32(size_t index) const {
-    if (index >= length() - 4) {
+    if (index > length() - 4) {
       throw std::out_of_range("bytestream split out of range");
     }
     return (((uint32_t)(*m_mem)[index]) << 24) |

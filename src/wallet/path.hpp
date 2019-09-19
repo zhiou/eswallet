@@ -18,7 +18,8 @@ namespace excelsecu {
 namespace wallet {
 namespace path {
 
-bytestream to_buffer(const std::string &path) {
+bytestream to_buffer(const std::string &path)
+{
   auto parts = utility::split(path, '/');
 
   auto begin = std::begin(parts);
@@ -40,8 +41,27 @@ bytestream to_buffer(const std::string &path) {
   return buffer;
 }
 
-std::string from_buffer(const bytestream &buffer) { return ""; }
-
+std::string make_path(const std::vector<uint32_t> &indexes)
+{
+    std::string path = "m";
+    for (auto index: indexes) {
+        path += "/";
+        bool hard = ((index & 0x80000000) > 0);
+        if (hard) index -= 0x80000000;
+        path += std::to_string(index);
+        if (hard) path += "'";
+    }
+    return path;
+}
+//TODO
+std::string from_buffer(const bytestream &buffer) {
+    size_t level = buffer.length() / 4;
+    std::vector<uint32_t> indexes;
+    for (int i = 0; i < level; ++i) {
+        indexes.push_back(buffer.readUInt32(i*4));
+    }
+    return make_path(indexes);
+}
 } // namespace path
 } // namespace wallet
 } // namespace excelsecu

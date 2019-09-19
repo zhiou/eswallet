@@ -10,6 +10,31 @@
 #include "EsCommon.h"
 #include <array>
 
+extern "C" {
+
+#if __BIG_ENDIAN__ || (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) ||\
+__ARMEB__ || __THUMBEB__ || __AARCH64EB__ || __MIPSEB__
+#define WORDS_BIGENDIAN        1
+#endif
+#define DETERMINISTIC          1
+#define USE_BASIC_CONFIG       1
+#define ENABLE_MODULE_RECOVERY 1
+
+#pragma clang diagnostic push
+#pragma GCC diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma clang diagnostic ignored "-Wunused-function"
+#pragma GCC diagnostic ignored "-Wunused-function"
+#pragma clang diagnostic ignored "-Wconditional-uninitialized"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#include "../../../secp256k1/src/basic-config.h"
+#include "../../../secp256k1/src/secp256k1.c"
+#pragma clang diagnostic pop
+#pragma GCC diagnostic pop
+
+};
+
 namespace excelsecu {
 namespace sm3 {
 bytestream hash(const bytestream &hash_msg) {

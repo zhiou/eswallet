@@ -73,6 +73,9 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
 - (void)testPath {
     auto buf = excelsecu::wallet::path::to_buffer("m/44'/60'/1'/0/0");
     std::cout << buf << std::endl;
+    
+    auto path = excelsecu::wallet::path::from_buffer(buf);
+    XCTAssert(path == "m/44'/60'/1'/0/0");
 }
 
 - (void)testFcBuffer {
@@ -111,7 +114,29 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
     s300_mocker.get_default_permission(wallet::coin::eos, 0);
     
     //    auto permissions = s300_mocker.get_permission(wallet::coin::eos, 0);
+    nlohmann::json tx = {
+        {
+            "inputs", {
+                {
+                    {"txId", "1212121212121212122"},
+                    {"index", 0},
+                    {"script", "adfaksdfasdsfd"},
+                }
+            }
+        },
+        
+        {
+            "outputs", {
+                {
+                    {"value", 0.1},
+                    {"address", "adfadfassdfasfassdf" }
+                }
+            }
+        }
+    };
+    s300_mocker.sign_transaction(wallet::coin::btc, tx);
 }
+
 
 - (void)testPerformanceExample {
     // This is an example of a performance test case.

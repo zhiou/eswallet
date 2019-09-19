@@ -22,7 +22,9 @@
 #include "error.hpp"
 
 #include "btc.hpp"
+#include "eth.hpp"
 #include "fcbuffer.hpp"
+#include "hash.hpp"
 
 namespace excelsecu {
 
@@ -30,7 +32,8 @@ namespace wallet {
 
 using json = nlohmann::json;
 
-template <class Transferable> class s300 {
+template <class Transferable>
+class s300 {
 public:
   s300()
       : all_enc(false), m_cur_app_id(""),
@@ -513,11 +516,61 @@ public:
       LOG_ERROR("add token failed" + e.what());
     }
   }
+    
+    /**
+     * tx:
+     * btc:
+     * {
+     *   inputs: [{
+     *     address: base58 string,
+     *     path: string,
+     *     txId: hex string,
+     *     index: number,
+     *     script: string,
+     *   }],
+     *   outputs: [{
+     *     address: base58 string,
+     *     value: number
+     *   }]
+     *   changePath: string,
+     * }
+     *
+     */
+    json sign_btc(json tx) {
+        
+    }
+    
+    /*
+    * eth:
+    * {
+    *   input: {
+    *     address: 0x string,
+    *     path: string,
+    *   ],
+    *   output: {
+    *     address: 0x string,
+    *     value: number
+    *   },
+    *   nonce: number,
+    *   gasPrice: 0x string,
+    *   gasLimit: 0x string,
+    *   data: 0x string,
+    * }
+     */
+    json sign_eth(json tx) {
+        
+    }
+    
+    json sign_eos(json tx) {
+        
+    }
 
   json sign_transaction(coin coin_type, json tx) {
 
-    auto build_sign = [&](const bytestream &path, const bytestream &change_path,
-                          const bytestream &msg) {
+    auto build_sign = [&](const bytestream &path,
+                          const bytestream &change_path,
+                          const bytestream &msg)
+    {
       auto data_length =
           2 + path.length() + 2 + change_path.length() + 3 + msg.length();
 
@@ -543,10 +596,12 @@ public:
       return payload;
     };
 
-    auto send_sign = [&](const bytestream &data, bool is_compressed) {
+    auto send_sign = [&](const bytestream &data, bool is_compressed)
+    {
       uint8_t compress_change = 0x08;
 
-      if (data.length() <= 0xFF) {
+      if (data.length() <= 0xFF)
+      {
         auto apdu_head = bytestream("8048030000");
         if (is_compressed)
           apdu_head[3] |= compress_change;
@@ -554,7 +609,9 @@ public:
         apdu_head[4] = data.length();
         auto apdu = apdu_head + data;
         return m_trans->send(apdu);
-      } else {
+      }
+      else
+      {
         auto remain_len = data.length();
 
         while (true) {
@@ -583,7 +640,8 @@ public:
       }
     };
 
-    auto parse_sign_resp = [&](coin coin_type, const bytestream &resp) {
+    auto parse_sign_resp = [&](coin coin_type, const bytestream &resp)
+    {
       bool is_eos = (coin_type == coin::eos);
       int offset = is_eos ? 1 : 0;
       int remain = is_eos ? resp[0] : 0;
@@ -595,43 +653,253 @@ public:
       return std::make_tuple(remain, v, r, s, pubkey);
     };
 
-    return json();
+    auto sign_btc = [&](coin coin_type, json tx)
+    {
+      auto make_basic_script = [&](json tx)
+      {
+        std::vector<json> inputs;
+        for (auto input : tx["inputs"])
+        {
+          inputs.emplace_back(json{{"hash", input["txId"]},
+                                   {"index", input["index"]},
+                                   {"scriptSig", input["script"]},
+                                   {"sequence", 0xFFFFFFFD}});
+        }
+
+        std::vector<json> outputs;
+        for (auto output : tx["outputs"])
+        {
+          auto script_pubkey =
+              address::make_output_script(coin_type, output["address"]);
+
+          output.emplace_back(json{{"amount", output["value"]},
+                                   {"scriptPubKey", script_pubkey}});
+        }
+        return json{{"version", 1},
+                    {"inputs", inputs},
+                    {"outputs", outputs},
+                    {"lockTime", 0}};
+      };
+
+      auto make_presign_script = [&](int i, json& bs)
+      {
+          
+          bytestream tx;
+          tx += bytestream("01000000");
+          tx.append((unsigned char)bs["version"]);
+          
+          // inputs serializer
+          std::vector<json> inputs = bs["inputs"];
+          
+          for (int j = 0; j < inputs.size(); j++) {
+              if (j != i) inputs[j]["scriptSing"] = "";
+          }
+          
+          for (auto input: inputs) {
+              tx += bytestream((std::string)input["hash"]).little_ending(); // 需要改为小头序
+              tx.append((unsigned int)input["index"]);
+              tx += bytestream((std::string)input["scriptSig"]);  // 签名前，script置为空
+              tx.append((unsigned int)input["sequence"]);
+          }
+          //output serializer
+          std::vector<json> outputs = bs["outputs"];
+          tx.append((unsigned char) outputs.size());
+          for (auto output: outputs) {
+              double amount = output["amount"];
+              amount *= 100000000;
+              auto amountHex = bytestream();
+              amountHex.append((unsigned int) amount).little_ending();
+              tx += amountHex;
+              
+              std::string out_script = output["scriptPubKey"];
+              auto script_hex = bytestream(out_script);
+              tx.append((unsigned char)script_hex.length());
+              tx += script_hex;
+          }
+          tx.append((unsigned int)bs["lockTime"]);
+          return tx;
+      };
+
+      auto make_script_sign = [&](const bytestream &r,
+                                  const bytestream &s,
+                                  const bytestream &pubkey)
+      {
+        size_t script_sign_len = 0x03 + 0x22 + 0x22 + 0x01 + 0x22;
+        bool upperR = (r[0] >= 0x80);
+        if (upperR)
+          script_sign_len++;
+
+        auto script_sign = bytestream(script_sign_len);
+        int index = 0;
+        size_t sign_len = 0x22 + 0x22 + (upperR ? 0x01 : 0x00);
+
+        script_sign[index++] = 0x03 + sign_len;
+        script_sign[index++] = 0x30;
+        script_sign[index++] = sign_len;
+
+        script_sign[index++] = 0x02;
+        script_sign[index++] = upperR ? 0x21 : 0x20;
+        if (upperR)
+          script_sign[index++] = 0x00;
+        script_sign += r;
+        index += r.length();
+
+        script_sign[index++] = 0x02;
+        script_sign[index++] = 0x20;
+        script_sign += s;
+        index += s.length();
+        // hash type
+        script_sign[index++] = 0x01;
+        // pubkey, compress type
+        script_sign[index++] = 0x21;
+        script_sign[index++] = (pubkey[63] % 2 == 0) ? 0x02 : 0x03;
+        script_sign += pubkey.split(0, 0x20);
+
+        return script_sign;
+      };
+
+      auto basic_script = make_basic_script(tx);
+      auto signed_tx = basic_script;
+      std::string change_path = tx["changePath"];
+      auto change_path_buffer = change_path.empty()
+                                    ? bytestream()
+                                    : path::to_buffer(tx["changePath"]);
+
+      std::vector<json> inputs = tx["inputs"];
+      for (int i = 0; i < inputs.size(); ++i) {
+        auto input = inputs[i];
+        auto path_buffer = path::to_buffer(input["path"]);
+        auto pre_sign_script = make_presign_script(i, basic_script);
+        auto apdu_data =
+            build_sign(path_buffer, change_path_buffer, pre_sign_script);
+        auto response = m_trans->send(apdu_data);
+        auto sign_resp = parse_sign_resp(coin_type, response);
+        auto script_sign =
+            make_script_sign(std::get<2>(sign_resp),
+                             std::get<3>(sign_resp),
+                             std::get<4>(sign_resp));
+          
+        signed_tx["inputs"][i]["scriptSig"] = script_sign.hex_str();
+      }
+
+        bytestream stx;
+        stx += bytestream("01000000");
+        stx.append((unsigned char)signed_tx["version"]);
+        
+        // inputs serializer
+        std::vector<json> sinputs = signed_tx["inputs"];
+        for (auto input: sinputs) {
+            stx += bytestream((std::string)input["hash"]).little_ending(); // 需要改为小头序
+            stx.append((unsigned int)input["index"]);
+            stx += bytestream((std::string)input["scriptSig"]);  // 签名前，script置为空
+            stx.append((unsigned int)input["sequence"]);
+        }
+        //output serializer
+        std::vector<json> outputs = signed_tx["outputs"];
+        stx.append((unsigned char) outputs.size());
+        for (auto output: outputs) {
+            double amount = output["amount"];
+            amount *= 100000000;
+            auto amountHex = bytestream();
+            amountHex.append((unsigned int) amount).little_ending();
+            stx += amountHex;
+            
+            std::string out_script = output["scriptPubKey"];
+            auto script_hex = bytestream(out_script);
+            stx.append((unsigned char)script_hex.length());
+            stx += script_hex;
+        }
+        stx.append((unsigned int)signed_tx["lockTime"]);
+        
+        return json{
+            {"id", signed_tx["hash"]},
+            {"hex", stx.hex_str()}
+        };
+    };
+
+//    auto sign_eth = [&](const std::string &net_type, json tx)
+//    {
+//      auto chain_id = eth::get_chain_id(net_type);
+//
+//      // rlp
+//      std::vector<json> unsigned_tx = {tx["nonce"],
+//                                       tx["gasPrice"],
+//                                       tx["gasLimit"],
+//                                       tx["output"]["address"],
+//                                       tx["output"]["value"],
+//                                       tx["data"],
+//                                       chain_id,
+//                                       0,
+//                                       0};
+//      auto rlp_unsigned_tx = rlp::encode(unsigned_tx);
+//
+//      auto apdu =
+//          build_sign(path::to_buffer(tx["input"]["path"]), "", rlp_unsigned_tx);
+//      auto resp = m_trans->send(apdu);
+//      auto rest = parse_sign_resp(coin::eth, resp);
+//      std::vector<json> signed_tx = {tx["nonce"],
+//                                     tx["gasPrice"],
+//                                     tx["gasLimit"],
+//                                     tx["output"]["address"],
+//                                     tx["output"]["value"],
+//                                     tx["data"],
+//                                     35 + chain_id * 2 + (std::get<1>(rest)),
+//                                     std::get<2>(rest).hex_str(),
+//                                     std::get<3>(rest).hex_str()};
+//      auto raw_tx = rlp.encode(signed_tx);
+//        auto tx_id = keccak256::hash(raw_tx);
+//      return json{{"id", tx_id}, {"hex", raw_tx.hex_str()}};
+//    };
+    return sign_btc(coin_type, tx);
   }
 
 private:
-  json pase_pmdata(coin coin_type, uint32_t account_index,
-                   const bytestream &pm) {
+  json pase_pmdata(coin coin_type,
+                   uint32_t account_index,
+                   const bytestream &pm)
+  {
     uint8_t type = pm[0];
 
     std::string data;
-    if (type == 0) { // type[1] actor[8] name[8] path[20]
+    if (type == 0)
+    { // type[1] actor[8] name[8] path[20]
       uint32_t pm_account_index = pm.readUInt32(1 + 8 + 8 + 4 * 2);
-      if (pm_account_index != account_index) {
+      if (pm_account_index != account_index)
+      {
         return json();
       }
       auto path = pm.split(17, 20);
       data = path::from_buffer(data);
-    } else if (type == 1) { // type[1] actor[8] name[8] account[4] publicKey[33]
+    }
+    else if (type == 1)
+    {
+      // type[1] actor[8] name[8] account[4] publicKey[33]
       uint32_t pm_account_index = pm.readUInt32(1 + 8 + 8);
-      if (pm_account_index != account_index) {
+      if (pm_account_index != account_index)
+      {
         return json();
       }
       auto pubkey = pm.split(21, 33);
       data = address::from_buffer(coin_type, pubkey);
-    } else {
+    }
+    else
+    {
       LOG_WARN("getPermissions unknown type");
     }
     auto actor_name = fcbuffer::decode_name(pm.split(1, 8).hex_str());
     auto name = fcbuffer::decode_name(pm.split(9, 8).hex_str());
-    return {{"type", (int)type},
+    return {
+            {"type", (int)type},
             {"actor", actor_name},
             {"name", name},
-            {"data", data}};
+            {"data", data}
+           };
   }
 
 private:
   // get applet id
-  std::string get_app_id(wallet::applet applet) {
+  std::string get_app_id(wallet::applet applet)
+  {
     switch (applet) {
     case wallet::applet::hdwallet:
       return "010102";
@@ -651,7 +919,8 @@ private:
     }
   }
 
-  json get_version_info(const std::string name, applet app) {
+  json get_version_info(const std::string name, applet app)
+  {
     select(app);
 
     json vi;
@@ -679,15 +948,18 @@ private:
     return vi;
   }
 
-  std::vector<json> get_applet_versions() {
-    std::vector<std::string> app_names{"HDWallet", "Manager", "Backup",
-                                       "BTC",      "ETH",     "EOS"};
-    std::vector<applet> applet_types{applet::hdwallet, applet::manager,
-                                     applet::backup,   applet::btc,
-                                     applet::eth,      applet::eos};
+  std::vector<json> get_applet_versions()
+  {
+    std::vector<std::string>
+    app_names{"HDWallet", "Manager", "Backup", "BTC",      "ETH",     "EOS"};
+      
+    std::vector<applet>
+    applet_types{applet::hdwallet, applet::manager, applet::backup, applet::btc, applet::eth, applet::eos};
+      
     std::vector<json> versions;
 
-    for (int i = 0; i < app_names.size(); ++i) {
+    for (int i = 0; i < app_names.size(); ++i)
+    {
       auto version = get_version_info(app_names[i], applet_types[i]);
       versions.emplace_back(version);
     }
