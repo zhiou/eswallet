@@ -134,7 +134,7 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
             }
         }
     };
-    s300_mocker.sign_transaction(wallet::coin::btc, tx);
+//    s300_mocker.sign_transaction(wallet::coin::btc, tx);
 }
 
 

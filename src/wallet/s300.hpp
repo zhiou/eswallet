@@ -660,10 +660,14 @@ public:
         std::vector<json> inputs;
         for (auto input : tx["inputs"])
         {
-          inputs.emplace_back(json{{"hash", input["txId"]},
+          inputs.emplace_back(
+                              json{
+                                   {"hash", input["txId"]},
                                    {"index", input["index"]},
                                    {"scriptSig", input["script"]},
-                                   {"sequence", 0xFFFFFFFD}});
+                                   {"sequence", 0xFFFFFFFD}
+                                  }
+                             );
         }
 
         std::vector<json> outputs;
