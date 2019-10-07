@@ -59,6 +59,10 @@ public:
       m_mem->emplace_back(b);
     }
   }
+    
+    bytestream(std::initializer_list<ebyte> l) {
+        m_mem = std::unique_ptr<ebyte_vec>(new ebyte_vec(l));
+    }
 
 public:
     
@@ -97,6 +101,14 @@ public:
     m_mem->emplace_back(ut & 0xFF);
       return *this;
   }
+    
+    bytestream& append(std::initializer_list<ebyte> l)
+    {
+        for (auto i: l) {
+            m_mem->emplace_back(i);
+        }
+        return *this;
+    }
 
   uint32_t readUInt32(size_t index) const {
     if (index > length() - 4) {
