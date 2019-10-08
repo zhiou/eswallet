@@ -16,9 +16,14 @@
 
 namespace excelsecu {
 
-template <class Transferable> class device {
+template <typename Driver, typename Config,
+    template <typename D, typename C> class Authenticate,
+    template <typename D, typename A, typename C> class Handshake,
+    template <typename D, typename H> class Transferable>
+class device {
+    using Transfer = Transferable<Driver, Handshake<Driver, Authenticate<Driver, Config>, Config>>;
 public:
-  device() { m_trans = std::make_unique<Transferable>(); }
+  device() { m_trans = std::make_unique<Transfer>(); }
 
   ~device() {}
 
@@ -54,7 +59,7 @@ public:
   }
 
 private:
-  std::unique_ptr<Transferable> m_trans;
+  std::unique_ptr<Transfer> m_trans;
 };
 }; // namespace excelsecu
 

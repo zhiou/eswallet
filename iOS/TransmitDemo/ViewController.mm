@@ -25,10 +25,7 @@
 
 using namespace excelsecu;
 
-//using driver_ble = driver<ble_driver>;
-
-using mock_handshake = handshake<driver_mocker, authenticator<driver_mocker, configure>, configure>;
-using mock_device = device<transmit<driver_mocker, mock_handshake>>;
+using mock_device = device<driver_mocker, configure, authenticator, handshake, transmit>;
 
 @interface ViewController ()
 {

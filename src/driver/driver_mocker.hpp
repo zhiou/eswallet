@@ -109,13 +109,18 @@ public:
       } else if (m_selected_app == "02C202") { // eos
         repo = bytestream("02C2020101091520190815");
       }
-    } else if (apdu.startWith("804C00000D03")) {
+    }
+    else if (apdu.startWith("804C00000D03")) {
       repo = bytestream(
           "01010203040506070801020304050607080102030405060708010203040506070801"
           "02030405060708010203040506070801020304050607080102030405060708");
-    } else if (apdu.startWith("80760000")) {
+    }
+    else if (apdu.startWith("80760000")) {
       std::string account_name = "eos_account";
       repo = bytestream(account_name.c_str(), account_name.length());
+    }
+    else if (apdu.startWith("8048")) {
+        repo = bytestream("15D95B794F5D0E7F71333BA3922AD0B91D3048348558690E952C81520AF53C645409F5C2CBF2F059E47B852D82533CF902DB7643E3669FFB000C135951AFD8019B0C812BBC931128D63DB3EDE20758E53857E9AC6E10176916135B82F60C2EA2068E40145F8F7C7B78A964684B8755C221896415F5251D163E2C9030D033B334FF");
     }
     return repo += bytestream("9000");
   }

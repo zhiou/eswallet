@@ -112,15 +112,16 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
     std::cout << account_name << std::endl;
     
     s300_mocker.get_default_permission(wallet::coin::eos, 0);
-    
-    //    auto permissions = s300_mocker.get_permission(wallet::coin::eos, 0);
+
     nlohmann::json tx = {
         {
             "inputs", {
                 {
-                    {"txId", "1212121212121212122"},
+                    {"txId", "61d520ccb74288c96bc1a2b20ea1c0d5a704776dd0164a396efec3ea7040349d"},
                     {"index", 0},
-                    {"script", "adfaksdfasdsfd"},
+                    {"script", ""},
+                    {"path", "m/44'/0'/0'/0/0"},
+                    {"address", "1PPLtigdq195KGQxUnQd2XpHnsQoQraPuS" }
                 }
             }
         },
@@ -128,13 +129,19 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
         {
             "outputs", {
                 {
-                    {"value", 0.1},
-                    {"address", "adfadfassdfasfassdf" }
+                    {"value", 12000},
+                    {"address", "1Q1EKJQKQm8GUpwyWSPDPTMq5nbW4gqSPD" },
+                    {"scriptPubKey", "" }
                 }
             }
-        }
+        },
+        {"changePath", ""}
     };
-//    s300_mocker.sign_transaction(wallet::coin::btc, tx);
+    auto signed_tx = s300_mocker.sign_transaction(wallet::coin::btc, tx);
+    std::string sign_id = signed_tx["id"];
+    std::string sign_hex = signed_tx["hex"];
+    XCTAssertTrue(sign_id == "ef0ec4f81d3f7ab394ffd2357b83120ebd85da8abc8baed88a2904d156f517db");
+    XCTAssertTrue(sign_hex == "01000000019d344070eac3fe6e394a16d06d7704a7d5c0a10eb2a2c16bc98842b7cc20d561000000006a47304402204bc063049378cdc960d45f5bac1406550c6643bd1b0bbf78e43d1839d29af87b02204eb99cc1e818cd2252dd0d7921441b2b4a0c65945e775a2c7424d3313325421d0121020329223a07aed46233f504c600ea04efd1484e05f5e0fc29e93a7739a8058fb1fdffffff01e02e0000000000001976a914fc56021d6ba6b3c60bb5f69a8b4f526addc5a33c88ac00000000");
 }
 
 

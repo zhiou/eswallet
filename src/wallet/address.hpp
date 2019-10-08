@@ -41,7 +41,7 @@ bytestream to_buffer(const std::string &address) {
     return bytestream(address.substr(2));
   } else { // bitcoin
     // p2pkh & p2sh supported
-    if (address.find("1mn23") == 0) // 如果首字节找到1,m,n,2,3 中的任意一个
+    if (address.find_first_of("1mn23") == 0) // 如果首字节找到1,m,n,2,3 中的任意一个
     {
       std::vector<unsigned char> ret;
       if (DecodeBase58Check(address, ret)) {

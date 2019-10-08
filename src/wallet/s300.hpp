@@ -571,28 +571,20 @@ public:
                           const bytestream &change_path,
                           const bytestream &msg)
     {
-      auto data_length =
-          2 + path.length() + 2 + change_path.length() + 3 + msg.length();
 
-      auto payload = bytestream(data_length);
-
-      int index = 0;
-      payload[index++] = 0xC0;
-      payload[index++] = path.length() / 4;
-      payload += path;
-      index += path.length();
-
-      payload[index++] = 0xC1;
-      payload[index++] = change_path.length() / 4;
-      payload += change_path;
-      index += change_path.length();
-
-      payload[index++] = 0xC2;
-      payload[index++] = msg.length() >> 8;
-      payload[index++] = msg.length();
-      payload += msg;
-      index += change_path.length();
-
+      auto payload = bytestream();
+        payload.append((uint8_t)0xC0);
+        payload.append((uint8_t)(path.length()/4));
+        payload += path;
+        
+        payload.append((uint8_t)0xC1);
+        payload.append((uint8_t)(change_path.length()/4));
+        payload += change_path;
+        
+        payload.append((uint8_t)0xC2);
+        payload.append((uint8_t)(msg.length() >> 8));
+        payload.append((uint8_t)msg.length());
+        payload += msg;
       return payload;
     };
 
@@ -675,9 +667,16 @@ public:
         {
           auto script_pubkey =
               address::make_output_script(coin_type, output["address"]);
-
-          output.emplace_back(json{{"amount", output["value"]},
-                                   {"scriptPubKey", script_pubkey}});
+            try {
+//                auto newout = json;
+                outputs.emplace_back(json{
+                    {"amount", output["value"]},
+                    {"scriptPubKey", script_pubkey}
+                });
+            }
+            catch(std::exception & e) {
+                std::cout << e.what() << std::endl;
+            }
         }
         return json{{"version", 1},
                     {"inputs", inputs},
@@ -776,7 +775,7 @@ public:
         auto pre_sign_script = make_presign_script(i, basic_script);
         auto apdu_data =
             build_sign(path_buffer, change_path_buffer, pre_sign_script);
-        auto response = m_trans->send(apdu_data);
+        auto response = send_sign(apdu_data, true);
         auto sign_resp = parse_sign_resp(coin_type, response);
         auto script_sign =
             make_script_sign(std::get<2>(sign_resp),
