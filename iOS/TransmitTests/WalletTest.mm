@@ -117,31 +117,47 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
         {
             "inputs", {
                 {
-                    {"txId", "61d520ccb74288c96bc1a2b20ea1c0d5a704776dd0164a396efec3ea7040349d"},
+                    {"txId", "476015ca2c1bde00bee951c132526c737f4754eee9defd3f0278d4f0d394bede"},
                     {"index", 0},
-                    {"script", ""},
+                    {"script", "76A91492a0aab7ca4d0125ab12fb580bd6ab4f97d9ddfd88AC"},
                     {"path", "m/44'/0'/0'/0/0"},
-                    {"address", "1PPLtigdq195KGQxUnQd2XpHnsQoQraPuS" }
+                    {"address", "1ENJ8LYCcTA69PjkSbGoKjZV5d4r9ieH27" }
+                },
+                {
+                    {"txId", "87aa3466539790d6aa30c225c3f408acb16a00135ec93d21ba70bca7d344ecf4"},
+                    {"index", 2},
+                    {"script", "76A91492a0aab7ca4d0125ab12fb580bd6ab4f97d9ddfd88AC"},
+                    {"path", "m/44'/0'/0'/0/0"},
+                    {"address", "1NrERKT8iV1GaCwEJtr1GjWfaoCpirWdnk" }
                 }
             }
         },
-        
         {
             "outputs", {
                 {
-                    {"value", 12000},
-                    {"address", "1Q1EKJQKQm8GUpwyWSPDPTMq5nbW4gqSPD" },
+                    {"value", 561000},
+                    {"address", "1NrERKT8iV1GaCwEJtr1GjWfaoCpirWdnk" },
+                    {"scriptPubKey", "" }
+                },
+                {
+                    {"value", 200000000},
+                    {"address", "3Hmnj95FwVWUNRx9i4ESbzUvPDAkobgUgw" },
+                    {"scriptPubKey", "" }
+                },
+                {
+                    {"value", 100000000},
+                    {"address", "3Hmnj95FwVWUNRx9i4ESbzUvPDAkobgUgw" },
                     {"scriptPubKey", "" }
                 }
             }
         },
-        {"changePath", ""}
+        {"changePath", "m/44'/0'/0'/1/0"}
     };
     auto signed_tx = s300_mocker.sign_transaction(wallet::coin::btc, tx);
     std::string sign_id = signed_tx["id"];
     std::string sign_hex = signed_tx["hex"];
-    XCTAssertTrue(sign_id == "ef0ec4f81d3f7ab394ffd2357b83120ebd85da8abc8baed88a2904d156f517db");
-    XCTAssertTrue(sign_hex == "01000000019d344070eac3fe6e394a16d06d7704a7d5c0a10eb2a2c16bc98842b7cc20d561000000006a47304402204bc063049378cdc960d45f5bac1406550c6643bd1b0bbf78e43d1839d29af87b02204eb99cc1e818cd2252dd0d7921441b2b4a0c65945e775a2c7424d3313325421d0121020329223a07aed46233f504c600ea04efd1484e05f5e0fc29e93a7739a8058fb1fdffffff01e02e0000000000001976a914fc56021d6ba6b3c60bb5f69a8b4f526addc5a33c88ac00000000");
+    XCTAssertTrue(sign_id == "710CF2EFEE5C8ACD1D9CBBCFB7A7EE8FBA717D6BB19D3DFCFDE1D60A9BCB1889");
+    XCTAssertTrue(sign_hex == "0100000002DEBE94D3F0D478023FFDDEE9EE54477F736C5232C151E9BE00DE1B2CCA156047000000006A4730440220690FC37056A358C3A5B03F0375FF846CC9D48DB4BFF1AA782250D55812D213CE02201B52FC5EBF811F2DEF0717AED8F851EE63B4491D7E9B084F3D92F0FA061137400121029B7EF9A41F5DCF7C1EA17CFC2493C24F5204B2E11BA21662192749226C0210B2FDFFFFFFF4EC44D3A7BC70BA213DC95E13006AB1AC08F4C325C230AAD69097536634AA87020000006A4730440220690FC37056A358C3A5B03F0375FF846CC9D48DB4BFF1AA782250D55812D213CE02201B52FC5EBF811F2DEF0717AED8F851EE63B4491D7E9B084F3D92F0FA061137400121029B7EF9A41F5DCF7C1EA17CFC2493C24F5204B2E11BA21662192749226C0210B2FDFFFFFF03688F0800000000001976A914EFAA39B62C83DC14EFCC4B6161E47C90611C61BD88AC00C2EB0B0000000017A914B069138CEA150B811B75236D5450C5F184EF9C5C8700E1F5050000000017A914B069138CEA150B811B75236D5450C5F184EF9C5C8700000000");
 }
 
 

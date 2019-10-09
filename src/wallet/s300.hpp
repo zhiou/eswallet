@@ -689,29 +689,34 @@ public:
           
           bytestream tx;
           tx += bytestream("01000000");
-          tx.append((unsigned char)bs["version"]);
+      
           
           // inputs serializer
           std::vector<json> inputs = bs["inputs"];
-          
+          tx.append((unsigned char) inputs.size());
           for (int j = 0; j < inputs.size(); j++) {
-              if (j != i) inputs[j]["scriptSing"] = "";
+              if (j != i) inputs[j]["scriptSig"] = "";
           }
           
           for (auto input: inputs) {
               tx += bytestream((std::string)input["hash"]).little_ending(); // 需要改为小头序
-              tx.append((unsigned int)input["index"]);
-              tx += bytestream((std::string)input["scriptSig"]);  // 签名前，script置为空
-              tx.append((unsigned int)input["sequence"]);
+              auto idx = bytestream();
+              idx.append((unsigned int)input["index"]);
+              tx += idx.little_ending();
+              std::string script = input["scriptSig"];
+              tx.append((unsigned char)(script.length()/2));
+              tx += bytestream(script);  // 签名前，script置为空
+              auto seq = bytestream();
+              seq.append((unsigned int)input["sequence"]);
+              tx += seq.little_ending();
           }
           //output serializer
           std::vector<json> outputs = bs["outputs"];
           tx.append((unsigned char) outputs.size());
           for (auto output: outputs) {
-              double amount = output["amount"];
-              amount *= 100000000;
+              uint64_t amount = output["amount"];
               auto amountHex = bytestream();
-              amountHex.append((unsigned int) amount).little_ending();
+              amountHex.append((uint64_t) amount).little_ending();
               tx += amountHex;
               
               std::string out_script = output["scriptPubKey"];
@@ -720,6 +725,7 @@ public:
               tx += script_hex;
           }
           tx.append((unsigned int)bs["lockTime"]);
+          tx.append((unsigned int)0x01000000); //transaction type
           return tx;
       };
 
@@ -727,35 +733,31 @@ public:
                                   const bytestream &s,
                                   const bytestream &pubkey)
       {
-        size_t script_sign_len = 0x03 + 0x22 + 0x22 + 0x01 + 0x22;
+        
         bool upperR = (r[0] >= 0x80);
-        if (upperR)
-          script_sign_len++;
 
-        auto script_sign = bytestream(script_sign_len);
-        int index = 0;
+        auto script_sign = bytestream();
+
         size_t sign_len = 0x22 + 0x22 + (upperR ? 0x01 : 0x00);
 
-        script_sign[index++] = 0x03 + sign_len;
-        script_sign[index++] = 0x30;
-        script_sign[index++] = sign_len;
+        script_sign.append((uint8_t)(0x03 + sign_len));
+        script_sign.append((uint8_t)0x30);
+        script_sign.append((uint8_t)sign_len);
 
-        script_sign[index++] = 0x02;
-        script_sign[index++] = upperR ? 0x21 : 0x20;
+        script_sign.append((uint8_t)0x02);
+        script_sign.append((uint8_t)(upperR ? 0x21 : 0x20));
         if (upperR)
-          script_sign[index++] = 0x00;
+          script_sign.append((uint8_t)0x00);
         script_sign += r;
-        index += r.length();
 
-        script_sign[index++] = 0x02;
-        script_sign[index++] = 0x20;
+        script_sign.append((uint8_t)0x02);
+        script_sign.append((uint8_t)0x20);
         script_sign += s;
-        index += s.length();
         // hash type
-        script_sign[index++] = 0x01;
+        script_sign.append((uint8_t)0x01);
         // pubkey, compress type
-        script_sign[index++] = 0x21;
-        script_sign[index++] = (pubkey[63] % 2 == 0) ? 0x02 : 0x03;
+        script_sign.append((uint8_t)0x21);
+        script_sign.append((uint8_t)((pubkey[63] % 2 == 0) ? 0x02 : 0x03));
         script_sign += pubkey.split(0, 0x20);
 
         return script_sign;
@@ -775,7 +777,7 @@ public:
         auto pre_sign_script = make_presign_script(i, basic_script);
         auto apdu_data =
             build_sign(path_buffer, change_path_buffer, pre_sign_script);
-        auto response = send_sign(apdu_data, true);
+        auto response = send_sign(apdu_data, false);
         auto sign_resp = parse_sign_resp(coin_type, response);
         auto script_sign =
             make_script_sign(std::get<2>(sign_resp),
@@ -787,24 +789,29 @@ public:
 
         bytestream stx;
         stx += bytestream("01000000");
-        stx.append((unsigned char)signed_tx["version"]);
         
         // inputs serializer
         std::vector<json> sinputs = signed_tx["inputs"];
+        stx.append((unsigned char) sinputs.size());
         for (auto input: sinputs) {
-            stx += bytestream((std::string)input["hash"]).little_ending(); // 需要改为小头序
-            stx.append((unsigned int)input["index"]);
-            stx += bytestream((std::string)input["scriptSig"]);  // 签名前，script置为空
-            stx.append((unsigned int)input["sequence"]);
+            stx += bytestream((std::string)input["hash"]).little_ending(); 
+            auto idx = bytestream();
+            idx.append((unsigned int)input["index"]);
+            stx += idx.little_ending();
+            std::string script = input["scriptSig"];
+            stx.append((unsigned char)(script.length()/2));
+            stx += bytestream(script);  // 签名前，script置为空
+            auto seq = bytestream();
+            seq.append((unsigned int)input["sequence"]);
+            stx += seq.little_ending();
         }
         //output serializer
         std::vector<json> outputs = signed_tx["outputs"];
         stx.append((unsigned char) outputs.size());
         for (auto output: outputs) {
-            double amount = output["amount"];
-            amount *= 100000000;
+            uint64_t amount = output["amount"];
             auto amountHex = bytestream();
-            amountHex.append((unsigned int) amount).little_ending();
+            amountHex.append((uint64_t) amount).little_ending();
             stx += amountHex;
             
             std::string out_script = output["scriptPubKey"];
@@ -813,9 +820,9 @@ public:
             stx += script_hex;
         }
         stx.append((unsigned int)signed_tx["lockTime"]);
-        
+        auto tid = sha256::hash(sha256::hash(stx));
         return json{
-            {"id", signed_tx["hash"]},
+            {"id", tid.reverse().hex_str()},
             {"hex", stx.hex_str()}
         };
     };

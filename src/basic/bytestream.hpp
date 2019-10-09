@@ -65,6 +65,10 @@ public:
     }
 
 public:
+    bytestream& reverse() {
+        std::reverse(m_mem->begin(), m_mem->end());
+        return *this;
+    }
     
     bytestream& little_ending() {
         std::reverse(m_mem->begin(), m_mem->end());
