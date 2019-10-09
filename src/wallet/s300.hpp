@@ -699,7 +699,8 @@ public:
           }
           
           for (auto input: inputs) {
-              tx += bytestream((std::string)input["hash"]).little_ending(); // 需要改为小头序
+              std::string hash = input["hash"];
+              tx += bytestream(hash).little_ending(); // 需要改为小头序
               auto idx = bytestream();
               idx.append((unsigned int)input["index"]);
               tx += idx.little_ending();
