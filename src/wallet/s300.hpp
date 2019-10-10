@@ -795,7 +795,8 @@ public:
         std::vector<json> sinputs = signed_tx["inputs"];
         stx.append((unsigned char) sinputs.size());
         for (auto input: sinputs) {
-            stx += bytestream((std::string)input["hash"]).little_ending(); 
+            auto hash = input["hash"].get<std::string>();
+            stx += bytestream(hash).little_ending();
             auto idx = bytestream();
             idx.append((unsigned int)input["index"]);
             stx += idx.little_ending();
