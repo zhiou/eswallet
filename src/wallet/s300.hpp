@@ -25,6 +25,7 @@
 #include "eth.hpp"
 #include "fcbuffer.hpp"
 #include "hash.hpp"
+#include "rlp.hpp"
 
 namespace excelsecu {
 
@@ -778,7 +779,7 @@ public:
         auto pre_sign_script = make_presign_script(i, basic_script);
         auto apdu_data =
             build_sign(path_buffer, change_path_buffer, pre_sign_script);
-        auto response = send_sign(apdu_data, false);
+        auto response = send_sign(apdu_data, true);
         auto sign_resp = parse_sign_resp(coin_type, response);
         auto script_sign =
             make_script_sign(std::get<2>(sign_resp),
@@ -829,40 +830,68 @@ public:
         };
     };
 
-//    auto sign_eth = [&](const std::string &net_type, json tx)
-//    {
-//      auto chain_id = eth::get_chain_id(net_type);
-//
-//      // rlp
-//      std::vector<json> unsigned_tx = {tx["nonce"],
-//                                       tx["gasPrice"],
-//                                       tx["gasLimit"],
-//                                       tx["output"]["address"],
-//                                       tx["output"]["value"],
-//                                       tx["data"],
-//                                       chain_id,
-//                                       0,
-//                                       0};
-//      auto rlp_unsigned_tx = rlp::encode(unsigned_tx);
-//
-//      auto apdu =
-//          build_sign(path::to_buffer(tx["input"]["path"]), "", rlp_unsigned_tx);
-//      auto resp = m_trans->send(apdu);
-//      auto rest = parse_sign_resp(coin::eth, resp);
-//      std::vector<json> signed_tx = {tx["nonce"],
-//                                     tx["gasPrice"],
-//                                     tx["gasLimit"],
-//                                     tx["output"]["address"],
-//                                     tx["output"]["value"],
-//                                     tx["data"],
-//                                     35 + chain_id * 2 + (std::get<1>(rest)),
-//                                     std::get<2>(rest).hex_str(),
-//                                     std::get<3>(rest).hex_str()};
-//      auto raw_tx = rlp.encode(signed_tx);
-//        auto tx_id = keccak256::hash(raw_tx);
-//      return json{{"id", tx_id}, {"hex", raw_tx.hex_str()}};
-//    };
-    return sign_btc(coin_type, tx);
+    auto sign_eth = [&](const std::string &net_type, json tx)
+    {
+      auto chain_id = eth::get_chain_id(net_type);
+
+        std::vector<bytestream> unsigned_tx;
+        auto n = tx["nonce"].get<uint64_t>();
+        auto nonce = eth::rlp_encoding(eth::to_binary(n));
+        unsigned_tx.push_back(nonce);
+        auto gas_price = eth::rlp_encoding(eth::to_binary(tx["gasPrice"].get<uint64_t>()));
+        unsigned_tx.push_back(gas_price);
+        auto gas_limit = eth::rlp_encoding(eth::to_binary(tx["gasLimit"].get<uint64_t>()));
+        unsigned_tx.push_back(gas_limit);
+        auto op_addr = eth::rlp_encoding(tx["output"]["address"].get<std::string>());
+        unsigned_tx.push_back(op_addr);
+        auto op_value = eth::rlp_encoding(eth::to_binary(tx["output"]["value"].get<uint64_t>()));
+        unsigned_tx.push_back(op_value);
+        auto data = eth::rlp_encoding(tx["data"].get<std::string>());
+        unsigned_tx.push_back(data);
+        
+        auto ch_id = eth::rlp_encoding(eth::to_binary(chain_id));
+        unsigned_tx.push_back(ch_id);
+        unsigned_tx.push_back(eth::rlp_encoding(bytestream("\x00", 1)));
+        unsigned_tx.push_back(eth::rlp_encoding(bytestream("\x00", 1)));
+        
+        auto rlp_unsigned_tx = eth::rlp_encoding(unsigned_tx);
+
+      auto apdu =
+          build_sign(path::to_buffer(tx["input"]["path"]), bytestream(""), rlp_unsigned_tx);
+      auto resp = send_sign(apdu, false);
+      auto rest = parse_sign_resp(coin::eth, resp);
+
+        std::vector<bytestream> signed_tx;
+        nonce = eth::rlp_encoding(eth::to_binary(tx["nouce"].get<uint64_t>()));
+        signed_tx.push_back(nonce);
+         gas_price = eth::rlp_encoding(eth::to_binary(tx["gasPrice"].get<uint64_t>()));
+        signed_tx.push_back(gas_price);
+         gas_limit = eth::rlp_encoding(eth::to_binary(tx["gasLimit"].get<uint64_t>()));
+        signed_tx.push_back(gas_limit);
+         op_addr = eth::rlp_encoding(tx["output"]["address"].get<std::string>());
+        signed_tx.push_back(op_addr);
+         op_value = eth::rlp_encoding(tx["output"]["value"].get<std::string>());
+        signed_tx.push_back(op_value);
+         data = eth::rlp_encoding(tx["data"].get<std::string>());
+        signed_tx.push_back(data);
+        
+         ch_id = eth::rlp_encoding(eth::to_binary(35 + chain_id * 2 + (std::get<1>(rest))));
+        signed_tx.push_back(ch_id);
+        signed_tx.push_back(eth::rlp_encoding(bytestream(std::get<2>(rest).hex_str())));
+        signed_tx.push_back(eth::rlp_encoding(bytestream(std::get<3>(rest).hex_str())));
+        
+        auto raw_tx = eth::rlp_encoding(signed_tx);
+
+        auto tx_id = keccak256::hash(raw_tx);
+      return json{
+          {"id", tx_id.hex_str()},
+          {"hex", raw_tx.hex_str()}
+      };
+    };
+       if (coin_type == coin::eth) {
+          return sign_eth(wallet::eth_main, tx);
+      }
+       return sign_btc(coin_type, tx);
   }
 
 private:

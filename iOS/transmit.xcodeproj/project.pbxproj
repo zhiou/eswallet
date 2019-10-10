@@ -47,6 +47,7 @@
 		9F99E8BB22FD5CD100BD1787 /* libtransmit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF623F122C9AF900056A5DC /* libtransmit.a */; };
 		9F99E8C122FD5DB000BD1787 /* session_key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F99E8BD22FD5DB000BD1787 /* session_key.cpp */; };
 		9F99E8C222FD5DB000BD1787 /* handshake.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F99E8BE22FD5DB000BD1787 /* handshake.cpp */; };
+		9FCA5CEB234ED8F50007D832 /* rlp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FCA5CE9234ED8F50007D832 /* rlp.cpp */; };
 		9FCB13F822EF100F005BCC32 /* cipher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FCB13F622EF100F005BCC32 /* cipher.cpp */; };
 		9FCD1C2522D2F4B600B978A4 /* eventbus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FCD1C2322D2F4B600B978A4 /* eventbus.cpp */; };
 		9FF6240E22C9E7F70056A5DC /* device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6240C22C9E7F70056A5DC /* device.cpp */; };
@@ -244,6 +245,8 @@
 		9F99E8BE22FD5DB000BD1787 /* handshake.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handshake.cpp; sourceTree = "<group>"; };
 		9F99E8BF22FD5DB000BD1787 /* session_key.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = session_key.hpp; sourceTree = "<group>"; };
 		9F99E8C022FD5DB000BD1787 /* handshake.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = handshake.hpp; sourceTree = "<group>"; };
+		9FCA5CE9234ED8F50007D832 /* rlp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rlp.cpp; sourceTree = "<group>"; };
+		9FCA5CEA234ED8F50007D832 /* rlp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rlp.hpp; sourceTree = "<group>"; };
 		9FCB13F622EF100F005BCC32 /* cipher.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cipher.cpp; sourceTree = "<group>"; };
 		9FCB13F722EF100F005BCC32 /* cipher.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cipher.hpp; sourceTree = "<group>"; };
 		9FCB13FA22EF1167005BCC32 /* hasher.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = hasher.hpp; sourceTree = "<group>"; };
@@ -355,6 +358,7 @@
 		9F08366F230E8739000EC0C0 /* utility */ = {
 			isa = PBXGroup;
 			children = (
+				9FCA5CE8234ED8D10007D832 /* rlp */,
 				9F08366A230E7D8E000EC0C0 /* json */,
 				9F083670230E8771000EC0C0 /* utility.cpp */,
 				9F083671230E8771000EC0C0 /* utility.hpp */,
@@ -684,6 +688,15 @@
 			path = handshake;
 			sourceTree = "<group>";
 		};
+		9FCA5CE8234ED8D10007D832 /* rlp */ = {
+			isa = PBXGroup;
+			children = (
+				9FCA5CE9234ED8F50007D832 /* rlp.cpp */,
+				9FCA5CEA234ED8F50007D832 /* rlp.hpp */,
+			);
+			path = rlp;
+			sourceTree = "<group>";
+		};
 		9FF623E822C9AF900056A5DC = {
 			isa = PBXGroup;
 			children = (
@@ -954,6 +967,7 @@
 				9FCB13F822EF100F005BCC32 /* cipher.cpp in Sources */,
 				9F0836EA23160E77000EC0C0 /* message_queue.cpp in Sources */,
 				9F623656230A89AD00491B04 /* basic_sink.cpp in Sources */,
+				9FCA5CEB234ED8F50007D832 /* rlp.cpp in Sources */,
 				9F99E83E22F946F000BD1787 /* ble_driver.cpp in Sources */,
 				9F08366E230E857F000EC0C0 /* path.cpp in Sources */,
 				9F623652230A7DCF00491B04 /* logger.cpp in Sources */,

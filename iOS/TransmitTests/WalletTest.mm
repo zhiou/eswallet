@@ -161,6 +161,31 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
 }
 
 
+//- (void)testEth {
+//    nlohmann::json tx = {
+//        {
+//            "input", {
+//                { "address", "0x1234567890123456789012345678901234567890" },
+//                { "path", "m/44'/60'/0'/0/0" }
+//            }
+//        },
+//        {   "output", {
+//                { "address", "0x0987654321098765432109876543210987654321" },
+//                { "value" , 0.518 * 100000000 }
+//            }
+//        },
+//            
+//        {   "nonce", 0 },
+//        {   "gasPrice", 1000000000 },
+//        {   "startGas", 21000 },
+//        {   "gasLimit", 0 },
+//        {   "data", "" }
+//    };
+//    
+//    s300_mocker.init();
+//    auto signed_tx = s300_mocker.sign_transaction(wallet::coin::eth, tx);
+//}
+
 - (void)testPerformanceExample {
     // This is an example of a performance test case.
     [self measureBlock:^{

@@ -119,8 +119,11 @@ public:
       std::string account_name = "eos_account";
       repo = bytestream(account_name.c_str(), account_name.length());
     }
-    else if (apdu.startWith("804802")) {
+    else if (apdu.startWith("804802")) { //BTC
         repo = bytestream("690FC37056A358C3A5B03F0375FF846CC9D48DB4BFF1AA782250D55812D213CE1B52FC5EBF811F2DEF0717AED8F851EE63B4491D7E9B084F3D92F0FA061137409B7EF9A41F5DCF7C1EA17CFC2493C24F5204B2E11BA21662192749226C0210B2553039087F380BEAB40FF933F045D06C7AB918F909B122F6FB9B48A07327203AFF");
+    }
+    else if (apdu.startWith("804803")) { //ETH
+        //TODO
     }
     return repo += bytestream("9000");
   }

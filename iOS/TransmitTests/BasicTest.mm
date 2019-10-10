@@ -15,6 +15,7 @@
 #import "cipher.hpp"
 #import "eslog.hpp"
 #import "basic_file_sink.hpp"
+#import "rlp.hpp"
 
 using namespace excelsecu;
 
@@ -234,6 +235,25 @@ using namespace excelsecu;
     }catch (es_error &e) {
         std::cout << "code = 0x" << std::hex << std::setw(8) << e.code() << "\nreason = " << e.what() << std::endl;
     }
+}
+
+- (void)testRlp {
+    std::string dog = "dog";
+    auto ret1 = eth::rlp_encoding(dog);
+    std::cout << "ret1 = " << ret1.hex_str() << std::endl;
+    
+    auto ret2 = eth::rlp_encoding(bytestream("0F"));
+    std::cout << "ret2 = " << ret2.hex_str() << std::endl;
+    
+    dog = "";
+    auto ret3 = eth::rlp_encoding(dog);
+    std::cout << "ret3 = " << ret3.hex_str() << std::endl;
+    
+    auto ret4 = eth::rlp_encoding(bytestream("0400"));
+    std::cout << "ret4 = " << ret4.hex_str() << std::endl;
+    
+    auto ret5 = eth::to_binary(1024);
+    std::cout << "ret5 = " << bytestream(ret5.c_str(), 0x02).hex_str() << std::endl;
 }
 
 - (void)testPerformanceExample {
