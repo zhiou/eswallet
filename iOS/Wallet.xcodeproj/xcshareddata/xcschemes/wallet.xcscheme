@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9FF623F022C9AF900056A5DC"
-               BuildableName = "libtransmit.a"
-               BlueprintName = "transmit"
-               ReferencedContainer = "container:transmit.xcodeproj">
+               BuildableName = "libWallet.a"
+               BlueprintName = "Wallet"
+               ReferencedContainer = "container:Wallet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -27,29 +27,27 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "9FF623F022C9AF900056A5DC"
+            BuildableName = "libWallet.a"
+            BlueprintName = "Wallet"
+            ReferencedContainer = "container:Wallet.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FDE2D13722F0B51700EF94D3"
+               BlueprintIdentifier = "FDE2D14722F0B57C00EF94D3"
                BuildableName = "TransmitTests.xctest"
                BlueprintName = "TransmitTests"
-               ReferencedContainer = "container:transmit.xcodeproj">
+               ReferencedContainer = "container:Wallet.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FF623F022C9AF900056A5DC"
-            BuildableName = "libtransmit.a"
-            BlueprintName = "transmit"
-            ReferencedContainer = "container:transmit.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -65,13 +63,11 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9FF623F022C9AF900056A5DC"
-            BuildableName = "libtransmit.a"
-            BlueprintName = "transmit"
-            ReferencedContainer = "container:transmit.xcodeproj">
+            BuildableName = "libWallet.a"
+            BlueprintName = "Wallet"
+            ReferencedContainer = "container:Wallet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -83,9 +79,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9FF623F022C9AF900056A5DC"
-            BuildableName = "libtransmit.a"
-            BlueprintName = "transmit"
-            ReferencedContainer = "container:transmit.xcodeproj">
+            BuildableName = "libWallet.a"
+            BlueprintName = "Wallet"
+            ReferencedContainer = "container:Wallet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

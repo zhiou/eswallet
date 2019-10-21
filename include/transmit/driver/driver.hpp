@@ -13,6 +13,10 @@
 #include <future>
 #include <stdexcept>
 #include <string>
+#include <spdlog/spdlog.h>
+
+#include "ble_driver.hpp"
+#include "audio_driver.hpp"
 
 //TODO
 // 本意是想设计成一个完全事件驱动的驱动类，但目前连接和发送还是主动调用型的接口
@@ -76,7 +80,7 @@ public:
     unsigned char recv[0x2000];
     unsigned int recvLen = sizeof(recv);
 
-    LOG_DEBUG("apdu: %s\n", apdu.hex_str());
+    SPDLOG_DEBUG("apdu: %s\n", apdu.hex_str());
 
     bool success =
         DriverType::send((ebyte *)apdu.bytes(), apdu.length(), recv, &recvLen);
@@ -85,7 +89,7 @@ public:
     }
 
     auto repo = bytestream(recv, recvLen);
-    LOG_DEBUG("resp: %s\n", repo.hex_str());
+    SPDLOG_DEBUG("resp: %s\n", repo.hex_str());
 
     return repo;
   }

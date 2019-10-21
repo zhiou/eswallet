@@ -12,6 +12,7 @@
 #import <transmit/handshake/handshake.hpp>
 #import <configure/configure.hpp>
 #import <transmit/transmit.hpp>
+#import <transmit/Transmit_.hpp>
 
 #import <wallet/wallet.hpp>
 #import <json/json.hpp>
