@@ -8,7 +8,7 @@
 
 #include <bytestream.hpp>
 
-#include "EsCommon.h"
+#include <EsCommon/EsCommon.h>
 #include <algorithm/cipher/cipher.hpp>
 #include <transmit/transmit_def.hpp>
 

@@ -488,17 +488,9 @@
 			children = (
 				9F0836E723160E5A000EC0C0 /* message_queue */,
 				9FF6240722C9B8260056A5DC /* algorithm */,
-				9FF6240022C9B0470056A5DC /* authenticate */,
 			);
 			name = transmit;
 			path = ../src;
-			sourceTree = "<group>";
-		};
-		9FF6240022C9B0470056A5DC /* authenticate */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = authenticate;
 			sourceTree = "<group>";
 		};
 		9FF6240722C9B8260056A5DC /* algorithm */ = {
@@ -908,6 +900,8 @@
 					../include,
 					../secp256k1,
 					../spdlog/include,
+					../vendor/headers/common,
+					../vendor/headers/driver,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -934,6 +928,8 @@
 					../include,
 					../secp256k1,
 					../spdlog/include,
+					../vendor/headers/common,
+					../vendor/headers/driver,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

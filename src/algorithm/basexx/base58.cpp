@@ -6,7 +6,7 @@
 
 //#include <hash.h>
 //#include <uint256.h>
-#include "EsCommon.h"
+#include <EsCommon/EsCommon.h>
 
 #include <cassert>
 #include <string>

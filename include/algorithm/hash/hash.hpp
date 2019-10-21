@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "bytestream.hpp"
+#include <bytestream.hpp>
 
 namespace excelsecu {
 namespace sm3 {

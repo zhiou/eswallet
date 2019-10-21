@@ -1,5 +1,5 @@
 #include <algorithm/sm/sm2.hpp>
-#include "EsCommon.h"
+#include <EsCommon/EsCommon.h>
 #include <transmit/transmit_def.hpp>
 
 namespace excelsecu {

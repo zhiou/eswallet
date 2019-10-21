@@ -7,7 +7,7 @@
 //
 
 #include <algorithm/hash/hash.hpp>
-#include "EsCommon.h"
+#include <EsCommon/EsCommon.h>
 #include <array>
 
 extern "C" {
