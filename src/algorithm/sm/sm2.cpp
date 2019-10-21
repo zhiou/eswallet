@@ -1,6 +1,6 @@
-#include "sm2.hpp"
+#include <algorithm/sm/sm2.hpp>
 #include "EsCommon.h"
-#include "transmit_def.hpp"
+#include <transmit/transmit_def.hpp>
 
 namespace excelsecu {
 namespace sm2 {

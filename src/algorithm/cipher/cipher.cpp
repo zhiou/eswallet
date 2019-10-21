@@ -6,11 +6,11 @@
 //  Copyright © 2019 zzstudio. All rights reserved.
 //
 
-#include "bytestream.hpp"
+#include <bytestream.hpp>
 
 #include "EsCommon.h"
-#include "cipher.hpp"
-#include "transmit_def.hpp"
+#include <algorithm/cipher/cipher.hpp>
+#include <transmit/transmit_def.hpp>
 
 namespace excelsecu {
 namespace cipher {

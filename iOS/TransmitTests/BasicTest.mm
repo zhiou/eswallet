@@ -7,15 +7,14 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "bytestream.hpp"
+#import <bytestream.hpp>
 
 
-#import "hash.hpp"
-#import "sm2.hpp"
-#import "cipher.hpp"
-#import "eslog.hpp"
-#import "basic_file_sink.hpp"
-#import "rlp.hpp"
+#import <algorithm/hash/hash.hpp>
+#import <algorithm/sm/sm2.hpp>
+#import <algorithm/cipher/cipher.hpp>
+#import <spdlog/spdlog.h>
+#import <wallet/eth/rlp/rlp.hpp>
 
 using namespace excelsecu;
 
@@ -102,6 +101,9 @@ using namespace excelsecu;
     
     std::cout << "bs11 = bs10.tail(2) = " << bs11 << std::endl;
     
+    bs11.append<4>(1024);
+    std::cout << "bs11 =" << bs11 << std::endl;
+    
 }
 
 - (void)testHash {
@@ -167,11 +169,11 @@ using namespace excelsecu;
 //    auto log = registry::instance().default_logger();
     
 //    file_logger->info("%s %d", __FUNCTION__, __LINE__);
-    LOG_DEBUG("hello %s %d times!", "world", 3000);
-    enable_file_logger("eslog.txt");
-    LOG_DEBUG("hello %s %d times!", "world", 3000);
+    SPDLOG_DEBUG("hello %s %d times!", "world", 3000);
+//    enable_file_logger("eslog.txt");
+    SPDLOG_DEBUG("hello %s %d times!", "world", 3000);
     
-    LOG_DEBUG("complete");
+    SPDLOG_DEBUG("complete");
 }
 
 - (void)testError {
@@ -254,6 +256,16 @@ using namespace excelsecu;
     
     auto ret5 = eth::to_binary(1024);
     std::cout << "ret5 = " << bytestream(ret5.c_str(), 0x02).hex_str() << std::endl;
+    
+    dog = "0x0987654321098765432109876543210987654321";
+    auto ret6 = eth::rlp_encoding(dog);
+     std::cout << "ret6 = " << ret6.hex_str() << std::endl;
+    
+    auto ret7 = eth::rlp_encoding(itobs(1000000000));
+    std::cout << "ret7 = " << ret7.hex_str() << std::endl;
+    
+    auto ret8 = eth::rlp_encoding(itobs((int)(0.518 * 100000000)));
+    std::cout << "ret8 = " << ret8.hex_str() << std::endl;
 }
 
 - (void)testPerformanceExample {

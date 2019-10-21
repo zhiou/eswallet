@@ -1,19 +1,23 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<testsuites name='TransmitTests.xctest' tests='12' failures='0'>
-  <testsuite name='AlgorithmTest' tests='6' failures='0'>
-    <testcase classname='AlgorithmTest' name='testFcBuffer' time='0.003'/>
-    <testcase classname='AlgorithmTest' name='testJson' time='0.004'/>
-    <testcase classname='AlgorithmTest' name='testPath' time='0.030'/>
-    <testcase classname='AlgorithmTest' name='testPerformanceExample' time='0.262'/>
-    <testcase classname='AlgorithmTest' name='testS300' time='0.030'/>
+<testsuites name='TransmitTests.xctest' tests='14' failures='0'>
+  <testsuite name='AlgorithmTest' tests='5' failures='0'>
+    <testcase classname='AlgorithmTest' name='testFcBuffer' time='0.002'/>
+    <testcase classname='AlgorithmTest' name='testJson' time='0.019'/>
+    <testcase classname='AlgorithmTest' name='testPath' time='0.001'/>
+    <testcase classname='AlgorithmTest' name='testS300' time='0.042'/>
     <testcase classname='AlgorithmTest' name='testWallet' time='0.001'/>
   </testsuite>
-  <testsuite name='TransmitTests' tests='6' failures='0'>
+  <testsuite name='MsgQueueTest' tests='2' failures='0'>
+    <testcase classname='MsgQueueTest' name='testExample' time='0.001'/>
+    <testcase classname='MsgQueueTest' name='testPerformanceExample' time='0.252'/>
+  </testsuite>
+  <testsuite name='TransmitTests' tests='7' failures='0'>
+    <testcase classname='TransmitTests' name='test3des112' time='0.001'/>
     <testcase classname='TransmitTests' name='testBytestream' time='0.002'/>
-    <testcase classname='TransmitTests' name='testError' time='0.003'/>
+    <testcase classname='TransmitTests' name='testError' time='0.002'/>
     <testcase classname='TransmitTests' name='testHash' time='0.001'/>
-    <testcase classname='TransmitTests' name='testLogger' time='0.002'/>
-    <testcase classname='TransmitTests' name='testPerformanceExample' time='0.254'/>
-    <testcase classname='TransmitTests' name='testSm2' time='0.012'/>
+    <testcase classname='TransmitTests' name='testLogger' time='0.001'/>
+    <testcase classname='TransmitTests' name='testPerformanceExample' time='0.252'/>
+    <testcase classname='TransmitTests' name='testSm2' time='0.011'/>
   </testsuite>
 </testsuites>

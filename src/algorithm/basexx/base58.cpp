@@ -2,7 +2,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "base58.hpp"
+#include <algorithm/base/base58.hpp>
 
 //#include <hash.h>
 //#include <uint256.h>

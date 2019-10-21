@@ -9,15 +9,15 @@
 #import <XCTest/XCTest.h>
 
 #import "driver_mocker.hpp"
-#import "handshake.hpp"
-#import "configure.hpp"
-#import "transmit.hpp"
+#import <transmit/handshake/handshake.hpp>
+#import <configure/configure.hpp>
+#import <transmit/transmit.hpp>
 
-#import "wallet.hpp"
-#import "json.hpp"
-#import "path.hpp"
-#import "fcbuffer.hpp"
-#import "s300.hpp"
+#import <wallet/wallet.hpp>
+#import <json/json.hpp>
+#import <wallet/path/path.hpp>
+#import <wallet/fcbuffer/fcbuffer.hpp>
+#import <wallet/s300.hpp>
 
 #import <array>
 #import <regex>
@@ -39,14 +39,14 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
 - (void)setUp {
     // Put setup code here. This method is called before the invocation of each test method in the class.
     
-    configure::current().set_host_name("周煌的iphone");
-
-    s300_mocker.connect("hehe");
+//    configure::current().set_host_name("周煌的iphone");
+//
+//    s300_mocker.connect("hehe");
 }
 
 - (void)tearDown {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
-    s300_mocker.disconnect();
+//    s300_mocker.disconnect();
 }
 
 - (void)testWallet {
@@ -161,30 +161,30 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
 }
 
 
-//- (void)testEth {
-//    nlohmann::json tx = {
-//        {
-//            "input", {
-//                { "address", "0x1234567890123456789012345678901234567890" },
-//                { "path", "m/44'/60'/0'/0/0" }
-//            }
-//        },
-//        {   "output", {
-//                { "address", "0x0987654321098765432109876543210987654321" },
-//                { "value" , 0.518 * 100000000 }
-//            }
-//        },
-//            
-//        {   "nonce", 0 },
-//        {   "gasPrice", 1000000000 },
-//        {   "startGas", 21000 },
-//        {   "gasLimit", 0 },
-//        {   "data", "" }
-//    };
-//    
-//    s300_mocker.init();
-//    auto signed_tx = s300_mocker.sign_transaction(wallet::coin::eth, tx);
-//}
+- (void)testEth {
+    nlohmann::json tx = {
+        {
+            "input", {
+                { "address", "0x1234567890123456789012345678901234567890" },
+                { "path", "m/44'/60'/0'/0/0" }
+            }
+        },
+        {   "output", {
+                { "address", "0x0987654321098765432109876543210987654321" },
+                { "value" , 0.518 * 100000000 }
+            }
+        },
+            
+        {   "nonce", 0 },
+        {   "gasPrice", 1000000000 },
+        {   "startGas", 21000 },
+        {   "gasLimit", 0 },
+        {   "data", "" }
+    };
+    
+    s300_mocker.init();
+    auto signed_tx = s300_mocker.sign_transaction(wallet::coin::eth, tx);
+}
 
 - (void)testPerformanceExample {
     // This is an example of a performance test case.

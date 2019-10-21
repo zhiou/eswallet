@@ -6,7 +6,7 @@
 //  Copyright © 2019 zzstudio. All rights reserved.
 //
 
-#include "hash.hpp"
+#include <algorithm/hash/hash.hpp>
 #include "EsCommon.h"
 #include <array>
 

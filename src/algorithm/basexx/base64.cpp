@@ -6,7 +6,7 @@
 //  Copyright © 2019 zzstudio. All rights reserved.
 //
 
-#include "base64.hpp"
+#include <algorithm/base/base64.hpp>
 #include <iostream>
 
 static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

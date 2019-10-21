@@ -6,7 +6,7 @@
 //  Copyright © 2019 zzstudio. All rights reserved.
 //
 
-#include "message_queue.hpp"
+#include <message_queue/message_queue.hpp>
 
 #include <algorithm>
 #include <chrono>

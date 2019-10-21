@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "message_queue.hpp"
+#import <message_queue/message_queue.hpp>
 
 using namespace excelsecu;
 
