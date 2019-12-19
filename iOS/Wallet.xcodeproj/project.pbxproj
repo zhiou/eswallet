@@ -14,8 +14,6 @@
 		9F622D93231D05F500622B42 /* WalletTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F622D92231D05F500622B42 /* WalletTest.mm */; };
 		9F62355F2306418C00491B04 /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F62355E2306418C00491B04 /* libiconv.2.4.0.tbd */; };
 		9F6235602306419400491B04 /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F62355E2306418C00491B04 /* libiconv.2.4.0.tbd */; };
-		9F752296235D7C8E0042FB66 /* audio_driver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F752270235D7C8E0042FB66 /* audio_driver.cpp */; };
-		9F752299235D7C8E0042FB66 /* ble_driver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F752273235D7C8E0042FB66 /* ble_driver.cpp */; };
 		9F75229D235D7C8E0042FB66 /* sm2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F75227C235D7C8E0042FB66 /* sm2.cpp */; };
 		9F75229E235D7C8E0042FB66 /* base58.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F75227E235D7C8E0042FB66 /* base58.cpp */; };
 		9F75229F235D7C8E0042FB66 /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F75227F235D7C8E0042FB66 /* base64.cpp */; };
@@ -109,9 +107,6 @@
 		9F622D92231D05F500622B42 /* WalletTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WalletTest.mm; sourceTree = "<group>"; };
 		9F62355C2306417C00491B04 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		9F62355E2306418C00491B04 /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
-		9F752268235D4AC50042FB66 /* driver_mocker.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = driver_mocker.hpp; sourceTree = "<group>"; };
-		9F752270235D7C8E0042FB66 /* audio_driver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audio_driver.cpp; sourceTree = "<group>"; };
-		9F752273235D7C8E0042FB66 /* ble_driver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ble_driver.cpp; sourceTree = "<group>"; };
 		9F75227C235D7C8E0042FB66 /* sm2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sm2.cpp; sourceTree = "<group>"; };
 		9F75227E235D7C8E0042FB66 /* base58.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = base58.cpp; sourceTree = "<group>"; };
 		9F75227F235D7C8E0042FB66 /* base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = base64.cpp; sourceTree = "<group>"; };
@@ -120,17 +115,7 @@
 		9F752294235D7C8E0042FB66 /* message_queue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = message_queue.cpp; sourceTree = "<group>"; };
 		9F7522AC235D7E9A0042FB66 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock.h; sourceTree = "<group>"; };
 		9F7522AD235D7E9A0042FB66 /* bytestream.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = bytestream.hpp; sourceTree = "<group>"; };
-		9F7522AE235D7E9A0042FB66 /* eventbus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = eventbus.hpp; sourceTree = "<group>"; };
 		9F7522AF235D7E9A0042FB66 /* utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = utility.hpp; sourceTree = "<group>"; };
-		9F7522B2235D7E9A0042FB66 /* authenticator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = authenticator.hpp; sourceTree = "<group>"; };
-		9F7522B4235D7E9A0042FB66 /* ble_driver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ble_driver.hpp; sourceTree = "<group>"; };
-		9F7522B5235D7E9A0042FB66 /* driver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = driver.hpp; sourceTree = "<group>"; };
-		9F7522B6235D7E9A0042FB66 /* audio_driver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = audio_driver.hpp; sourceTree = "<group>"; };
-		9F7522B8235D7E9A0042FB66 /* session_key.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = session_key.hpp; sourceTree = "<group>"; };
-		9F7522B9235D7E9A0042FB66 /* handshake.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = handshake.hpp; sourceTree = "<group>"; };
-		9F7522BB235D7E9A0042FB66 /* device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = device.hpp; sourceTree = "<group>"; };
-		9F7522BC235D7E9A0042FB66 /* transmit.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = transmit.hpp; sourceTree = "<group>"; };
-		9F7522BD235D7E9A0042FB66 /* transmit_def.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = transmit_def.hpp; sourceTree = "<group>"; };
 		9F7522BF235D7E9A0042FB66 /* configure.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = configure.hpp; sourceTree = "<group>"; };
 		9F7522C2235D7E9A0042FB66 /* sm2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = sm2.hpp; sourceTree = "<group>"; };
 		9F7522C4235D7E9A0042FB66 /* hash.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = hash.hpp; sourceTree = "<group>"; };
@@ -157,7 +142,6 @@
 		9F7522E5235D7E9A0042FB66 /* any.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = any.hpp; sourceTree = "<group>"; };
 		9F7522E6235D7E9A0042FB66 /* thread.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = thread.hpp; sourceTree = "<group>"; };
 		9F7522E7235D7E9A0042FB66 /* callback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = callback.h; sourceTree = "<group>"; };
-		9F7522E8235D80FC0042FB66 /* Transmit_.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Transmit_.hpp; sourceTree = "<group>"; };
 		9F99E8A222FD5CBB00BD1787 /* TransmitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TransmitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F99E8A422FD5CBB00BD1787 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9F99E8A522FD5CBB00BD1787 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -168,6 +152,7 @@
 		9F99E8B022FD5CBD00BD1787 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9F99E8B222FD5CBD00BD1787 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F99E8B322FD5CBD00BD1787 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		9FC0D43223AB6A1800CF3CC8 /* ITransmit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITransmit.h; sourceTree = "<group>"; };
 		9FF623F122C9AF900056A5DC /* libWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWallet.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FF78A25231E61FE001F6429 /* MsgQueueTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MsgQueueTest.mm; sourceTree = "<group>"; };
 		FDE2D14822F0B57C00EF94D3 /* TransmitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TransmitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -333,28 +318,10 @@
 		9F752269235D7C8E0042FB66 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				9F75226C235D7C8E0042FB66 /* transmit */,
 				9F75227A235D7C8E0042FB66 /* algorithm */,
 				9F752293235D7C8E0042FB66 /* message_queue */,
 			);
 			name = src;
-			sourceTree = "<group>";
-		};
-		9F75226C235D7C8E0042FB66 /* transmit */ = {
-			isa = PBXGroup;
-			children = (
-				9F75226F235D7C8E0042FB66 /* driver */,
-			);
-			path = transmit;
-			sourceTree = "<group>";
-		};
-		9F75226F235D7C8E0042FB66 /* driver */ = {
-			isa = PBXGroup;
-			children = (
-				9F752270235D7C8E0042FB66 /* audio_driver.cpp */,
-				9F752273235D7C8E0042FB66 /* ble_driver.cpp */,
-			);
-			path = driver;
 			sourceTree = "<group>";
 		};
 		9F75227A235D7C8E0042FB66 /* algorithm */ = {
@@ -412,11 +379,10 @@
 		9F7522AB235D7E9A0042FB66 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				9FC0D43223AB6A1800CF3CC8 /* ITransmit.h */,
 				9F7522AC235D7E9A0042FB66 /* spinlock.h */,
 				9F7522AD235D7E9A0042FB66 /* bytestream.hpp */,
-				9F7522AE235D7E9A0042FB66 /* eventbus.hpp */,
 				9F7522AF235D7E9A0042FB66 /* utility.hpp */,
-				9F7522B0235D7E9A0042FB66 /* transmit */,
 				9F7522BE235D7E9A0042FB66 /* configure */,
 				9F7522C0235D7E9A0042FB66 /* algorithm */,
 				9F7522D0235D7E9A0042FB66 /* error.hpp */,
@@ -427,55 +393,6 @@
 			);
 			name = include;
 			path = ../include;
-			sourceTree = "<group>";
-		};
-		9F7522B0235D7E9A0042FB66 /* transmit */ = {
-			isa = PBXGroup;
-			children = (
-				9F7522B1235D7E9A0042FB66 /* athenticate */,
-				9F7522B3235D7E9A0042FB66 /* driver */,
-				9F7522B7235D7E9A0042FB66 /* handshake */,
-				9F7522BA235D7E9A0042FB66 /* device */,
-				9F7522BC235D7E9A0042FB66 /* transmit.hpp */,
-				9F7522E8235D80FC0042FB66 /* Transmit_.hpp */,
-				9F7522BD235D7E9A0042FB66 /* transmit_def.hpp */,
-			);
-			path = transmit;
-			sourceTree = "<group>";
-		};
-		9F7522B1235D7E9A0042FB66 /* athenticate */ = {
-			isa = PBXGroup;
-			children = (
-				9F7522B2235D7E9A0042FB66 /* authenticator.hpp */,
-			);
-			path = athenticate;
-			sourceTree = "<group>";
-		};
-		9F7522B3235D7E9A0042FB66 /* driver */ = {
-			isa = PBXGroup;
-			children = (
-				9F7522B4235D7E9A0042FB66 /* ble_driver.hpp */,
-				9F7522B5235D7E9A0042FB66 /* driver.hpp */,
-				9F7522B6235D7E9A0042FB66 /* audio_driver.hpp */,
-			);
-			path = driver;
-			sourceTree = "<group>";
-		};
-		9F7522B7235D7E9A0042FB66 /* handshake */ = {
-			isa = PBXGroup;
-			children = (
-				9F7522B8235D7E9A0042FB66 /* session_key.hpp */,
-				9F7522B9235D7E9A0042FB66 /* handshake.hpp */,
-			);
-			path = handshake;
-			sourceTree = "<group>";
-		};
-		9F7522BA235D7E9A0042FB66 /* device */ = {
-			isa = PBXGroup;
-			children = (
-				9F7522BB235D7E9A0042FB66 /* device.hpp */,
-			);
-			path = device;
 			sourceTree = "<group>";
 		};
 		9F7522BE235D7E9A0042FB66 /* configure */ = {
@@ -688,7 +605,6 @@
 				FDE2D14A22F0B57C00EF94D3 /* BasicTest.mm */,
 				9F622D92231D05F500622B42 /* WalletTest.mm */,
 				9FF78A25231E61FE001F6429 /* MsgQueueTest.mm */,
-				9F752268235D4AC50042FB66 /* driver_mocker.hpp */,
 				FDE2D14C22F0B57C00EF94D3 /* Info.plist */,
 			);
 			path = TransmitTests;
@@ -830,10 +746,8 @@
 				9F75229E235D7C8E0042FB66 /* base58.cpp in Sources */,
 				9F7522AA235D7C8E0042FB66 /* message_queue.cpp in Sources */,
 				9F7522A1235D7C8E0042FB66 /* cipher.cpp in Sources */,
-				9F752299235D7C8E0042FB66 /* ble_driver.cpp in Sources */,
 				9F7522A0235D7C8E0042FB66 /* hash.cpp in Sources */,
 				9F75229D235D7C8E0042FB66 /* sm2.cpp in Sources */,
-				9F752296235D7C8E0042FB66 /* audio_driver.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

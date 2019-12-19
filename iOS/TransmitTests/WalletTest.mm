@@ -8,11 +8,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import "driver_mocker.hpp"
-#import <transmit/handshake/handshake.hpp>
 #import <configure/configure.hpp>
-#import <transmit/transmit.hpp>
-#import <transmit/Transmit_.hpp>
 
 #import <wallet/wallet.hpp>
 #import <json/json.hpp>
@@ -25,9 +21,7 @@
 
 using namespace excelsecu;
 
-using mock_handshake = handshake<driver_mocker, authenticator<driver_mocker, configure>, configure>;
-
-using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
+using mock = wallet::s300;
 
 @interface AlgorithmTest : XCTestCase
 {
@@ -109,10 +103,10 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
     std::cout << ret << std::endl;
     
     // key
-    auto account_name = s300_mocker.get_account_name(wallet::coin::eos, 0, "m/44'/1'/0'/0/0");
-    std::cout << account_name << std::endl;
-    
-    s300_mocker.get_default_permission(wallet::coin::eos, 0);
+//    auto account_name = s300_mocker.get_account_name(wallet::coin::eos, 0, "m/44'/1'/0'/0/0");
+//    std::cout << account_name << std::endl;
+//
+//    s300_mocker.get_default_permission(wallet::coin::eos, 0);
 
     nlohmann::json tx = {
         {
@@ -159,6 +153,8 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
     std::string sign_hex = signed_tx["hex"];
     XCTAssertTrue(sign_id == "710CF2EFEE5C8ACD1D9CBBCFB7A7EE8FBA717D6BB19D3DFCFDE1D60A9BCB1889");
     XCTAssertTrue(sign_hex == "0100000002DEBE94D3F0D478023FFDDEE9EE54477F736C5232C151E9BE00DE1B2CCA156047000000006A4730440220690FC37056A358C3A5B03F0375FF846CC9D48DB4BFF1AA782250D55812D213CE02201B52FC5EBF811F2DEF0717AED8F851EE63B4491D7E9B084F3D92F0FA061137400121029B7EF9A41F5DCF7C1EA17CFC2493C24F5204B2E11BA21662192749226C0210B2FDFFFFFFF4EC44D3A7BC70BA213DC95E13006AB1AC08F4C325C230AAD69097536634AA87020000006A4730440220690FC37056A358C3A5B03F0375FF846CC9D48DB4BFF1AA782250D55812D213CE02201B52FC5EBF811F2DEF0717AED8F851EE63B4491D7E9B084F3D92F0FA061137400121029B7EF9A41F5DCF7C1EA17CFC2493C24F5204B2E11BA21662192749226C0210B2FDFFFFFF03688F0800000000001976A914EFAA39B62C83DC14EFCC4B6161E47C90611C61BD88AC00C2EB0B0000000017A914B069138CEA150B811B75236D5450C5F184EF9C5C8700E1F5050000000017A914B069138CEA150B811B75236D5450C5F184EF9C5C8700000000");
+    std::cout << "stx:" << std::endl;
+    std::cout << signed_tx << std::endl;
 }
 
 
@@ -184,6 +180,16 @@ using mock = wallet::s300<transmit<driver_mocker, mock_handshake>>;
     };
     
     s300_mocker.init();
+    
+    s300_mocker.select(wallet::coin::eth);
+    
+    auto ret = s300_mocker.get_wallet_info();
+    std::cout << ret << std::endl;
+    
+    s300_mocker.get_pubkey(wallet::coin::eth, "m/44'/1'/0'/0/0");
+    
+    s300_mocker.get_address(wallet::coin::eth, "m/44'/1'/0'/0/0");
+    
     auto signed_tx = s300_mocker.sign_transaction(wallet::coin::eth, tx);
 }
 

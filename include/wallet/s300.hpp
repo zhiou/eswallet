@@ -27,6 +27,8 @@
 #include "fcbuffer/fcbuffer.hpp"
 
 #include "eth/rlp/rlp.hpp"
+#include "ITransmit.h"
+#include "error.hpp"
 
 namespace excelsecu {
 
@@ -34,33 +36,13 @@ namespace wallet {
 
 using json = nlohmann::json;
 
-template <class Transferable>
+
 class s300 {
 public:
   s300()
-      : all_enc(false), m_cur_app_id(""),
-        m_trans(std::make_unique<Transferable>()) {}
+    : all_enc(false), m_cur_app_id(""){}
 
 public:
-  bool connect(const std::string &sn) {
-
-    try {
-      m_trans->connect(sn);
-    } catch (std::exception &e) {
-      return false;
-    }
-    return true;
-  }
-
-  bool disconnect() {
-
-    try {
-      m_trans->disconnect();
-    } catch (std::exception &e) {
-      return false;
-    }
-    return true;
-  }
 
   json init() {
 
@@ -69,7 +51,7 @@ public:
     std::string wallet_id = "";
     try {
       auto apdu = bytestream("8070000000");
-      auto resp = m_trans->send(apdu);
+      auto resp = send(apdu);
       wallet_id = "0000" + resp.hex_str();
     } catch (const es_error &e) {
       SPDLOG_ERROR("get wallet id failed. %s", e.what());
@@ -88,7 +70,7 @@ public:
     try {
       auto apdu = bytestream("00A4040008B000000000" + app_id);
       auto resp =
-          m_trans->send(apdu); // 如果返回值不为9000，或者发送失败将会抛出异常
+          send(apdu); // 如果返回值不为9000，或者发送失败将会抛出异常
       m_cur_app_id = app_id;
     } catch (const es_error &e) {
       SPDLOG_ERROR("select applet failed %s", e.what());
@@ -145,7 +127,7 @@ public:
     std::string pubkey;
     try {
       auto apdu = bytestream("804600" + flag + "1505") + path::to_buffer(path);
-      auto resp = m_trans->send(apdu, false);
+      auto resp = send(apdu, false);
       pubkey = resp.hex_str();
     } catch (const es_error &e) {
       SPDLOG_ERROR("get pubkey failed, path = " + path);
@@ -187,7 +169,7 @@ public:
       auto apdu = bytestream("804600001505") + path::to_buffer(path);
       apdu[3] = flag;
 
-      auto resp = m_trans->send(apdu);
+      auto resp = send(apdu);
       address = resp.utf8_str();
 
       // 如果是BTC测试网，需要增加6F开头
@@ -213,7 +195,7 @@ public:
 
     try {
       auto apdu = bytestream("804C00000D03") + path::to_buffer(path);
-      auto resp = m_trans->send(apdu);
+      auto resp = send(apdu);
 
       dd["publicKey"] = resp.split(0, 33).hex_str();
       dd["chainCode"] = resp.split(33, 32).hex_str();
@@ -285,7 +267,7 @@ public:
     apdu[4] = data_len;
 
     try {
-      auto resp = m_trans->send(apdu);
+      auto resp = send(apdu);
       return resp.utf8_str();
     } catch (const es_error &e) {
       SPDLOG_ERROR("get account name failed, reason %s ", e.what());
@@ -306,7 +288,7 @@ public:
     apdu.append(account);
 
     try {
-      m_trans->send(apdu);
+      send(apdu);
     } catch (const es_error &e) {
       SPDLOG_ERROR("get default permission failed, reason %s ", e.what());
     }
@@ -324,7 +306,7 @@ public:
     while (true) {
       auto apdu = bytestream("807800000100");
       apdu[5] = offset;
-      auto resp = m_trans->send(apdu);
+      auto resp = send(apdu);
       size_t pm_size = resp[1];
       constexpr size_t pm_data_size = 54;
       for (int i = 0; i < pm_size; ++i) {
@@ -367,7 +349,7 @@ public:
       apdu.append(name);
       apdu += path;
 
-      auto resp = m_trans->send(apdu);
+      auto resp = send(apdu);
     } catch (const es_error &e) {
       SPDLOG_ERROR("add permission failed %s ", e.what());
     }
@@ -390,7 +372,7 @@ public:
       apdu.append(name);
       apdu += path;
 
-      auto resp = m_trans->send(apdu);
+      auto resp = send(apdu);
     } catch (const es_error &e) {
       SPDLOG_ERROR("add permission failed %s ", e.what());
     }
@@ -420,7 +402,7 @@ public:
       apdu += payload;
 
       apdu[4] = payload.length();
-      m_trans->send(apdu);
+      send(apdu);
     } catch (const es_error &e) {
       SPDLOG_ERROR("import key failed %s ", e.what());
     }
@@ -451,7 +433,7 @@ public:
       apdu += payload;
 
       apdu[4] = payload.length();
-      m_trans->send(apdu);
+      send(apdu);
     } catch (const es_error &e) {
       SPDLOG_ERROR("remove key failed %s ", e.what());
     }
@@ -468,7 +450,7 @@ public:
       apdu.append(amount_limit);
       apdu[4] = 0x08;
 
-      auto resp = m_trans->send(apdu);
+      auto resp = send(apdu);
     } catch (const es_error &e) {
       SPDLOG_ERROR("set amount limit failed %s ", e.what());
     }
@@ -497,7 +479,7 @@ public:
 
       apdu += address::to_buffer(address);
 
-      m_trans->send(apdu);
+      send(apdu);
     } catch (const es_error &e) {
       SPDLOG_ERROR("add token failed %s ", e.what());
     }
@@ -513,59 +495,11 @@ public:
       // 8072 0000 len address[20]
       std::string address = token["address"];
       auto apdu = bytestream("8072000020") + address::to_buffer(address);
-      m_trans->send(apdu);
+      send(apdu);
     } catch (const es_error &e) {
       SPDLOG_ERROR("add token failed %s ", e.what());
     }
   }
-    
-    /**
-     * tx:
-     * btc:
-     * {
-     *   inputs: [{
-     *     address: base58 string,
-     *     path: string,
-     *     txId: hex string,
-     *     index: number,
-     *     script: string,
-     *   }],
-     *   outputs: [{
-     *     address: base58 string,
-     *     value: number
-     *   }]
-     *   changePath: string,
-     * }
-     *
-     */
-    json sign_btc(json tx) {
-        
-    }
-    
-    /*
-    * eth:
-    * {
-    *   input: {
-    *     address: 0x string,
-    *     path: string,
-    *   ],
-    *   output: {
-    *     address: 0x string,
-    *     value: number
-    *   },
-    *   nonce: number,
-    *   gasPrice: 0x string,
-    *   gasLimit: 0x string,
-    *   data: 0x string,
-    * }
-     */
-    json sign_eth(json tx) {
-        
-    }
-    
-    json sign_eos(json tx) {
-        
-    }
 
   json sign_transaction(coin coin_type, json tx) {
 
@@ -602,7 +536,7 @@ public:
 
         apdu_head[4] = data.length();
         auto apdu = apdu_head + data;
-        return m_trans->send(apdu);
+        return send(apdu);
       }
       else
       {
@@ -616,18 +550,18 @@ public:
             auto offset = data.length() - remain_len;
 
             auto apdu = apdu_head + data.split(offset, remain_len);
-            return m_trans->send(apdu);
+            return send(apdu);
           } else if (remain_len == data.length()) {
             auto apdu_head = bytestream("80480100FF");
             auto apdu = apdu_head + data.split(0, 0xFF);
-            m_trans->send(apdu);
+            send(apdu);
           } else {
             auto apdu_head = bytestream("80480000FF");
             apdu_head[3] |= compress_change;
             auto offset = data.length() - remain_len;
 
             auto apdu = apdu_head + data.split(offset, 0xFF);
-            m_trans->send(apdu);
+            send(apdu);
           }
           remain_len -= 0xFF;
         }
@@ -943,6 +877,56 @@ private:
   }
 
 private:
+    bytestream m_selected_app;
+    bytestream send(const bytestream &apdu, bool encrypt = true) {
+       // TODO: 各种指令
+       bytestream repo;
+       if (apdu.mem()[0x01] == 0x84) // 取随机数
+       {
+         repo = bytestream(apdu.mem()[0x04], true);
+       }
+       else if (apdu.startWith("00A4040008B000000000")) {
+         m_selected_app = apdu.tail(3).hex_str();
+       }
+        else if (apdu.startWith("804A000000")) {
+         if (m_selected_app == "010102") { // hdwallet
+           repo = bytestream("0101020101070420190621");
+         } else if (m_selected_app == "010202") { // manager
+           repo = bytestream("0102020101041620190820");
+         } else if (m_selected_app == "010302") { // backup
+           repo = bytestream("0103020101020120190517");
+         } else if (m_selected_app == "020002") { // btc
+           repo = bytestream("0200020101060720190807");
+         } else if (m_selected_app == "023C02") { // eth
+           repo = bytestream("023C020101041020190806");
+         } else if (m_selected_app == "02C202") { // eos
+           repo = bytestream("02C2020101091520190815");
+         }
+       }
+       else if (apdu.startWith("804C00000D03")) {
+         repo = bytestream(
+             "01010203040506070801020304050607080102030405060708010203040506070801"
+             "02030405060708010203040506070801020304050607080102030405060708");
+       }
+       else if (apdu.startWith("80760000")) {
+         std::string account_name = "eos_account";
+         repo = bytestream(account_name.c_str(), account_name.length());
+       }
+       else if (apdu.startWith("804802")) { //BTC
+           repo = bytestream("690FC37056A358C3A5B03F0375FF846CC9D48DB4BFF1AA782250D55812D213CE1B52FC5EBF811F2DEF0717AED8F851EE63B4491D7E9B084F3D92F0FA061137409B7EF9A41F5DCF7C1EA17CFC2493C24F5204B2E11BA21662192749226C0210B2553039087F380BEAB40FF933F045D06C7AB918F909B122F6FB9B48A07327203AFF");
+       }
+       else if (apdu.startWith("804803")) { //ETH
+           //TODO
+       }
+       return repo += bytestream("9000");
+     }
+//    bytestream send(const bytestream& apdu, bool encrypt = true) {
+//        static uint8_t recv[6864] = {0};
+//        uint32_t recvLen = sizeof(recv);
+//        uint32_t ret = Transmit(apdu.bytes(), (uint32_t)apdu.length(), recv, &recvLen, encrypt);
+//        if (ret) throw tsm_err("send apdu failed", ret);
+//        return bytestream(recv, recvLen);
+//    }
   // get applet id
   std::string get_app_id(wallet::applet applet)
   {
@@ -975,7 +959,7 @@ private:
 
     try {
       auto apdu = bytestream("804A000000");
-      auto resp = m_trans->send(apdu, false);
+      auto resp = send(apdu, false);
 
       auto version = resp.split(4, 3).hex_str();
 
@@ -1013,7 +997,6 @@ private:
   }
 
 private:
-  std::unique_ptr<Transferable> m_trans;
   std::string m_cur_app_id;
   bool all_enc;
 

@@ -71,11 +71,14 @@ std::string to_eth_checksum_address(const bytestream &buffer) {
 }
 
 std::string from_buffer(coin coin_type, const bytestream &buffer) {
-  if (coin_type == coin::eth && buffer.length() == 20) {
+  if (coin_type == coin::eth && buffer.length() == 20)
+  {
     return to_eth_checksum_address(buffer);
-  } else if (coin_type == coin::btc && buffer.length() == 21) {
+  } else if (coin_type == coin::btc && buffer.length() == 21)
+  {
     return EncodeBase58Check(buffer.mem());
-  } else if (coin_type == coin::eos && buffer.length() == 33) {
+  } else if (coin_type == coin::eos && buffer.length() == 33)
+  {
     auto hash_value = ripemd160::hash(buffer);
     auto address_check = bytestream(buffer) + hash_value.front(4);
     return "EOS" + EncodeBase58(address_check.mem());
@@ -86,22 +89,27 @@ std::string from_buffer(coin coin_type, const bytestream &buffer) {
 
 bytestream parse_eos_private_key(const std::string &prikey) {
   std::vector<unsigned char> decoded;
-  if (DecodeBase58Check(prikey, decoded)) {
+  if (DecodeBase58Check(prikey, decoded))
+  {
     return bytestream(decoded).split(1, 0x20);
   }
   throw tsm_err("invalid base58 code", ERROR_COMMON_INVALID_DATA);
 }
 
 // TODO
-std::string make_output_script(coin coin_type, const std::string &address) {
-    auto check_btc_address = [&address]() {
+std::string make_output_script(coin coin_type, const std::string &address)
+{
+    auto check_btc_address = [&address]()
+    {
         std::vector<unsigned char> vch_ret;
         if (DecodeBase58Check(address, vch_ret))
         {
             bytestream buffer(vch_ret);
-            if (buffer.length() == 21) {
+            if (buffer.length() == 21)
+            {
                 unsigned char network = buffer[0];
-                switch (network) {
+                switch (network)
+                {
                     case 0:
                         return "p2pkh";
                     case 0x05:

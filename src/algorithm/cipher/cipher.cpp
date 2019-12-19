@@ -10,7 +10,6 @@
 
 #include <EsCommon/EsCommon.h>
 #include <algorithm/cipher/cipher.hpp>
-#include <transmit/transmit_def.hpp>
 
 namespace excelsecu {
 namespace cipher {
