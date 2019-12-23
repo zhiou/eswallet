@@ -243,15 +243,15 @@ using namespace excelsecu;
     std::string dog = "dog";
     
     json tx = {
-        {"nonce", 0},
+        {"nonce", ""},
         {"gasPrice", 20000000000},
-        {"gasLimit", 21000},
+        {"gasLimit", "21000"},
         { "output", {
             {"address", "e0defb92145fef3c3a945637705fafd3aa74a209"},
             {"value", 1000000000000000000}
         }
         },
-        {"data", "00"}
+        {"data", ""}
     };
     
     json vrs = {
@@ -262,7 +262,7 @@ using namespace excelsecu;
     
     auto ret1 = eth::rlp_encoding(tx, vrs);
     std::cout << "RLP encoded:\n" << ret1 << std::endl;
-    XCTAssert(ret1 == bytestream("f86c008504a817c80082520894e0defb92145fef3c3a945637705fafd3aa74a209880de0b6b3a7640000001ba009ebb6ca057a0535d6186462bc0b465b561c94a295bdb0621fc19208ab149a9ca0440ffd775ce91a833ab410777204d5341a6f9fa91216a6f3ee2c051fea6a0428"));
+    XCTAssert(ret1 == bytestream("f86f808504a817c80085323130303094e0defb92145fef3c3a945637705fafd3aa74a209880de0b6b3a7640000801ba009ebb6ca057a0535d6186462bc0b465b561c94a295bdb0621fc19208ab149a9ca0440ffd775ce91a833ab410777204d5341a6f9fa91216a6f3ee2c051fea6a0428"));
 }
 
 - (void)testPerformanceExample {
