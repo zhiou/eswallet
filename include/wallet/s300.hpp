@@ -833,8 +833,8 @@ public:
               auto check = ripemd160::hash(checkBuffer).split(0,4);
               auto sign = buffer + check;
               auto signature = EncodeBase58(sign.mem());
-              signedTx["signatures"] = {"SIG_K1_" + signature};
-              std::cout << "stgnatures:" << signedTx["signatures"][0].get<std::string>() << std::endl;
+              signedTx["signatures"].push_back("SIG_K1_" + signature);
+              std::cout << "stgnatures:" << "SIG_K1_" + signature << std::endl;
               if (remain == 0) break;
           }
           auto txId = sha256::hash(rawTx).hex_str();
