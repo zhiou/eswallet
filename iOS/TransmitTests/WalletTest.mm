@@ -171,10 +171,10 @@ using mock = wallet::s300;
                 { "value" , 10000000000000000 }
             }
         },
-        {   "nonce", "" },
+        {   "nonce", 0 },
         {   "gasPrice", 2000000000 },
         {   "startGas", 21000 },
-        {   "gasLimit", "" },
+        {   "gasLimit", 0 },
         {   "data", "" }
     };
     
@@ -231,7 +231,7 @@ using mock = wallet::s300;
     XCTAssertTrue(excelsecu::wallet::fcbuffer::serialize(tx) == bytestream("34b5b45b6adb550b1ec9000000000100a6823403ea3055000000572d3ccdcd01000000000093dd7400000000a8ed323221000000000093dd74000000008093dd74701101000000000004535953000000000000"));
     
     
-    s300_mocker.init();
+     s300_mocker.init();
     
     s300_mocker.select(wallet::coin::eos);
     

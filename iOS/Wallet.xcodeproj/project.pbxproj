@@ -19,7 +19,6 @@
 		9F75229F235D7C8E0042FB66 /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F75227F235D7C8E0042FB66 /* base64.cpp */; };
 		9F7522A0235D7C8E0042FB66 /* hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F752281235D7C8E0042FB66 /* hash.cpp */; };
 		9F7522A1235D7C8E0042FB66 /* cipher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F752283235D7C8E0042FB66 /* cipher.cpp */; };
-		9F7522AA235D7C8E0042FB66 /* message_queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F752294235D7C8E0042FB66 /* message_queue.cpp */; };
 		9F99E8A622FD5CBB00BD1787 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F99E8A522FD5CBB00BD1787 /* AppDelegate.m */; };
 		9F99E8A922FD5CBB00BD1787 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F99E8A822FD5CBB00BD1787 /* ViewController.mm */; };
 		9F99E8AC22FD5CBB00BD1787 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F99E8AA22FD5CBB00BD1787 /* Main.storyboard */; };
@@ -29,7 +28,6 @@
 		9F99E8BB22FD5CD100BD1787 /* libWallet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF623F122C9AF900056A5DC /* libWallet.a */; };
 		9FC0D43723ADB6A900CF3CC8 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 9FC0D43323ADB6A800CF3CC8 /* utils.c */; };
 		9FC0D43823ADB6A900CF3CC8 /* RLP.c in Sources */ = {isa = PBXBuildFile; fileRef = 9FC0D43623ADB6A900CF3CC8 /* RLP.c */; };
-		9FF78A26231E61FE001F6429 /* MsgQueueTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78A25231E61FE001F6429 /* MsgQueueTest.mm */; };
 		FDE2D14B22F0B57C00EF94D3 /* BasicTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = FDE2D14A22F0B57C00EF94D3 /* BasicTest.mm */; };
 		FDE2D14D22F0B57C00EF94D3 /* libWallet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF623F122C9AF900056A5DC /* libWallet.a */; };
 /* End PBXBuildFile section */
@@ -114,7 +112,6 @@
 		9F75227F235D7C8E0042FB66 /* base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = base64.cpp; sourceTree = "<group>"; };
 		9F752281235D7C8E0042FB66 /* hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hash.cpp; sourceTree = "<group>"; };
 		9F752283235D7C8E0042FB66 /* cipher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cipher.cpp; sourceTree = "<group>"; };
-		9F752294235D7C8E0042FB66 /* message_queue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = message_queue.cpp; sourceTree = "<group>"; };
 		9F7522AC235D7E9A0042FB66 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock.h; sourceTree = "<group>"; };
 		9F7522AD235D7E9A0042FB66 /* bytestream.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = bytestream.hpp; sourceTree = "<group>"; };
 		9F7522AF235D7E9A0042FB66 /* utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = utility.hpp; sourceTree = "<group>"; };
@@ -140,10 +137,6 @@
 		9F7522DF235D7E9A0042FB66 /* eth.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = eth.hpp; sourceTree = "<group>"; };
 		9F7522E1235D7E9A0042FB66 /* rlp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rlp.hpp; sourceTree = "<group>"; };
 		9F7522E2235D7E9A0042FB66 /* s300.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = s300.hpp; sourceTree = "<group>"; };
-		9F7522E4235D7E9A0042FB66 /* message_queue.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = message_queue.hpp; sourceTree = "<group>"; };
-		9F7522E5235D7E9A0042FB66 /* any.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = any.hpp; sourceTree = "<group>"; };
-		9F7522E6235D7E9A0042FB66 /* thread.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = thread.hpp; sourceTree = "<group>"; };
-		9F7522E7235D7E9A0042FB66 /* callback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = callback.h; sourceTree = "<group>"; };
 		9F99E8A222FD5CBB00BD1787 /* TransmitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TransmitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F99E8A422FD5CBB00BD1787 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9F99E8A522FD5CBB00BD1787 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -161,7 +154,6 @@
 		9FC0D43623ADB6A900CF3CC8 /* RLP.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = RLP.c; sourceTree = "<group>"; };
 		9FC0D43A23ADEA0A00CF3CC8 /* eos.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = eos.hpp; sourceTree = "<group>"; };
 		9FF623F122C9AF900056A5DC /* libWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWallet.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		9FF78A25231E61FE001F6429 /* MsgQueueTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MsgQueueTest.mm; sourceTree = "<group>"; };
 		FDE2D14822F0B57C00EF94D3 /* TransmitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TransmitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDE2D14A22F0B57C00EF94D3 /* BasicTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BasicTest.mm; sourceTree = "<group>"; };
 		FDE2D14C22F0B57C00EF94D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -326,7 +318,6 @@
 			isa = PBXGroup;
 			children = (
 				9F75227A235D7C8E0042FB66 /* algorithm */,
-				9F752293235D7C8E0042FB66 /* message_queue */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -375,14 +366,6 @@
 			path = cipher;
 			sourceTree = "<group>";
 		};
-		9F752293235D7C8E0042FB66 /* message_queue */ = {
-			isa = PBXGroup;
-			children = (
-				9F752294235D7C8E0042FB66 /* message_queue.cpp */,
-			);
-			path = message_queue;
-			sourceTree = "<group>";
-		};
 		9F7522AB235D7E9A0042FB66 /* include */ = {
 			isa = PBXGroup;
 			children = (
@@ -396,7 +379,6 @@
 				9F7522D1235D7E9A0042FB66 /* os_dir.hpp */,
 				9F7522D2235D7E9A0042FB66 /* json */,
 				9F7522D4235D7E9A0042FB66 /* wallet */,
-				9F7522E3235D7E9A0042FB66 /* message_queue */,
 			);
 			name = include;
 			path = ../include;
@@ -543,17 +525,6 @@
 			path = rlp;
 			sourceTree = "<group>";
 		};
-		9F7522E3235D7E9A0042FB66 /* message_queue */ = {
-			isa = PBXGroup;
-			children = (
-				9F7522E4235D7E9A0042FB66 /* message_queue.hpp */,
-				9F7522E5235D7E9A0042FB66 /* any.hpp */,
-				9F7522E6235D7E9A0042FB66 /* thread.hpp */,
-				9F7522E7235D7E9A0042FB66 /* callback.h */,
-			);
-			path = message_queue;
-			sourceTree = "<group>";
-		};
 		9F99E8A322FD5CBB00BD1787 /* TransmitDemo */ = {
 			isa = PBXGroup;
 			children = (
@@ -624,7 +595,6 @@
 			children = (
 				FDE2D14A22F0B57C00EF94D3 /* BasicTest.mm */,
 				9F622D92231D05F500622B42 /* WalletTest.mm */,
-				9FF78A25231E61FE001F6429 /* MsgQueueTest.mm */,
 				FDE2D14C22F0B57C00EF94D3 /* Info.plist */,
 			);
 			path = TransmitTests;
@@ -765,7 +735,6 @@
 				9F75229F235D7C8E0042FB66 /* base64.cpp in Sources */,
 				9FC0D43723ADB6A900CF3CC8 /* utils.c in Sources */,
 				9F75229E235D7C8E0042FB66 /* base58.cpp in Sources */,
-				9F7522AA235D7C8E0042FB66 /* message_queue.cpp in Sources */,
 				9FC0D43823ADB6A900CF3CC8 /* RLP.c in Sources */,
 				9F7522A1235D7C8E0042FB66 /* cipher.cpp in Sources */,
 				9F7522A0235D7C8E0042FB66 /* hash.cpp in Sources */,
@@ -777,7 +746,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9FF78A26231E61FE001F6429 /* MsgQueueTest.mm in Sources */,
 				FDE2D14B22F0B57C00EF94D3 /* BasicTest.mm in Sources */,
 				9F622D93231D05F500622B42 /* WalletTest.mm in Sources */,
 			);
