@@ -24,21 +24,20 @@ static void rlp_encode_int(json j, pb_byte_t *new_bytes, pb_size_t *new_size) {
     uint64_t n = 0;
     if (j.is_number()) {
         n = j.get<uint64_t>();
-    }
-    else if (j.is_string()) {
-        std::stringstream ss(j.get<std::string>());
-        ss >> n;
-    }
-    if (n == 0)
-    {
-        wallet_encode_element((pb_byte_t*)"", (pb_size_t)0,
-        new_bytes, new_size, false);
-    }
-    else
-    {
+        if (n == 0) {
+            wallet_encode_element((pb_byte_t*)"", (pb_size_t)0,
+            new_bytes, new_size, false);
+            return ;
+        }
         auto ele = itobs(n);
         wallet_encode_element((pb_byte_t*)ele.bytes(), (pb_size_t)ele.length(),
                               new_bytes, new_size, false);
+        return ;
+    }
+    else if (j.is_string()) {
+        auto str = j.get<std::string>();
+       wallet_encode_element((pb_byte_t*)str.c_str(), (pb_size_t)str.length(),
+       new_bytes, new_size, false);
     }
 }
 

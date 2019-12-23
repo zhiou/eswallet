@@ -243,9 +243,9 @@ using namespace excelsecu;
     std::string dog = "dog";
     
     json tx = {
-        {"nonce", "0"},
+        {"nonce", 0},
         {"gasPrice", 20000000000},
-        {"gasLimit", "21000"},
+        {"gasLimit", 21000},
         { "output", {
             {"address", "e0defb92145fef3c3a945637705fafd3aa74a209"},
             {"value", 1000000000000000000}

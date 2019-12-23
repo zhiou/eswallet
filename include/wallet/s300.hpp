@@ -46,7 +46,6 @@ public:
 public:
 
   json init() {
-
     select(applet::hdwallet);
 
     std::string wallet_id = "";
@@ -814,6 +813,7 @@ public:
               {"signatures", {}
               }
           };
+          std::vector<std::string> signatures;
           while (true) {
               auto resp = send_sign(signBuf, false);
               auto rest = parse_sign_resp(coin::eos, resp);
@@ -833,10 +833,11 @@ public:
               auto check = ripemd160::hash(checkBuffer).split(0,4);
               auto sign = buffer + check;
               auto signature = EncodeBase58(sign.mem());
-              signedTx["signatures"].push_back("SIG_K1_" + signature);
+              signatures.push_back("SIG_K1_" + signature);
               std::cout << "stgnatures:" << "SIG_K1_" + signature << std::endl;
               if (remain == 0) break;
           }
+          signedTx["signatures"] = json(signatures);
           auto txId = sha256::hash(rawTx).hex_str();
           return json {
               {"txId", txId},
@@ -899,6 +900,8 @@ private:
 private:
     bytestream m_selected_app;
     bytestream send(const bytestream &apdu, bool encrypt = true) {
+        std::cout << "apdu:" << std::endl;
+        std::cout << apdu.hex_str() << std::endl;
        // TODO: 各种指令
        bytestream repo;
        if (apdu.mem()[0x01] == 0x84) // 取随机数

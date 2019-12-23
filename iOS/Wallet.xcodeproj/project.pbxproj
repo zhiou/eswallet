@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9F622D8C231CDE9B00622B42 /* libiOSBLEDriver.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F622D5B231CDE9B00622B42 /* libiOSBLEDriver.a */; };
-		9F622D8D231CDE9B00622B42 /* libiOSBLEDriver.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F622D5B231CDE9B00622B42 /* libiOSBLEDriver.a */; };
 		9F622D8E231CDE9B00622B42 /* libEsCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F622D5D231CDE9B00622B42 /* libEsCommon.a */; };
 		9F622D8F231CDE9B00622B42 /* libEsCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F622D5D231CDE9B00622B42 /* libEsCommon.a */; };
 		9F622D93231D05F500622B42 /* WalletTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F622D92231D05F500622B42 /* WalletTest.mm */; };
@@ -62,15 +60,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		9F622D5B231CDE9B00622B42 /* libiOSBLEDriver.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libiOSBLEDriver.a; sourceTree = "<group>"; };
 		9F622D5D231CDE9B00622B42 /* libEsCommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libEsCommon.a; sourceTree = "<group>"; };
-		9F622D61231CDE9B00622B42 /* EsDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EsDriver.h; sourceTree = "<group>"; };
-		9F622D62231CDE9B00622B42 /* EsDriverBle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EsDriverBle.h; sourceTree = "<group>"; };
-		9F622D63231CDE9B00622B42 /* esBLEKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = esBLEKey.h; sourceTree = "<group>"; };
-		9F622D64231CDE9B00622B42 /* EsBLEManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EsBLEManager.h; sourceTree = "<group>"; };
-		9F622D65231CDE9B00622B42 /* esBLEKeyProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = esBLEKeyProtocol.h; sourceTree = "<group>"; };
-		9F622D66231CDE9B00622B42 /* EsSerialInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EsSerialInterface.h; sourceTree = "<group>"; };
-		9F622D67231CDE9B00622B42 /* EsBLEKeyDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EsBLEKeyDefines.h; sourceTree = "<group>"; };
 		9F622D6A231CDE9B00622B42 /* EsList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EsList.h; sourceTree = "<group>"; };
 		9F622D6B231CDE9B00622B42 /* EsCommClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EsCommClient.h; sourceTree = "<group>"; };
 		9F622D6C231CDE9B00622B42 /* EsP12.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EsP12.h; sourceTree = "<group>"; };
@@ -165,7 +155,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F622D8F231CDE9B00622B42 /* libEsCommon.a in Frameworks */,
-				9F622D8D231CDE9B00622B42 /* libiOSBLEDriver.a in Frameworks */,
 				9F6235602306419400491B04 /* libiconv.2.4.0.tbd in Frameworks */,
 				9F99E8BB22FD5CD100BD1787 /* libWallet.a in Frameworks */,
 			);
@@ -183,7 +172,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F622D8E231CDE9B00622B42 /* libEsCommon.a in Frameworks */,
-				9F622D8C231CDE9B00622B42 /* libiOSBLEDriver.a in Frameworks */,
 				9F62355F2306418C00491B04 /* libiconv.2.4.0.tbd in Frameworks */,
 				FDE2D14D22F0B57C00EF94D3 /* libWallet.a in Frameworks */,
 			);
@@ -205,18 +193,9 @@
 		9F622D59231CDE9B00622B42 /* libs */ = {
 			isa = PBXGroup;
 			children = (
-				9F622D5A231CDE9B00622B42 /* driver */,
 				9F622D5C231CDE9B00622B42 /* common */,
 			);
 			path = libs;
-			sourceTree = "<group>";
-		};
-		9F622D5A231CDE9B00622B42 /* driver */ = {
-			isa = PBXGroup;
-			children = (
-				9F622D5B231CDE9B00622B42 /* libiOSBLEDriver.a */,
-			);
-			path = driver;
 			sourceTree = "<group>";
 		};
 		9F622D5C231CDE9B00622B42 /* common */ = {
@@ -230,32 +209,9 @@
 		9F622D5E231CDE9B00622B42 /* headers */ = {
 			isa = PBXGroup;
 			children = (
-				9F622D5F231CDE9B00622B42 /* driver */,
 				9F622D68231CDE9B00622B42 /* common */,
 			);
 			path = headers;
-			sourceTree = "<group>";
-		};
-		9F622D5F231CDE9B00622B42 /* driver */ = {
-			isa = PBXGroup;
-			children = (
-				9F622D60231CDE9B00622B42 /* ble */,
-			);
-			path = driver;
-			sourceTree = "<group>";
-		};
-		9F622D60231CDE9B00622B42 /* ble */ = {
-			isa = PBXGroup;
-			children = (
-				9F622D61231CDE9B00622B42 /* EsDriver.h */,
-				9F622D62231CDE9B00622B42 /* EsDriverBle.h */,
-				9F622D63231CDE9B00622B42 /* esBLEKey.h */,
-				9F622D64231CDE9B00622B42 /* EsBLEManager.h */,
-				9F622D65231CDE9B00622B42 /* esBLEKeyProtocol.h */,
-				9F622D66231CDE9B00622B42 /* EsSerialInterface.h */,
-				9F622D67231CDE9B00622B42 /* EsBLEKeyDefines.h */,
-			);
-			path = ble;
 			sourceTree = "<group>";
 		};
 		9F622D68231CDE9B00622B42 /* common */ = {
