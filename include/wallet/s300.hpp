@@ -24,6 +24,7 @@
 
 #include "btc/btc.hpp"
 #include "eth/eth.hpp"
+#include "eos/eos.hpp"
 #include "fcbuffer/fcbuffer.hpp"
 
 #include "eth/rlp/rlp.hpp"
@@ -768,58 +769,30 @@ public:
     auto sign_eth = [&](const std::string &net_type, json tx)
     {
       auto chain_id = eth::get_chain_id(net_type);
+        json vrs = {
+               {"V", chain_id},
+               {"R", "00"},
+               {"S", "00"}
+           };
+        auto unsigned_tx = eth::rlp_encoding(tx, vrs);
 
-        std::vector<bytestream> unsigned_tx;
-        auto n = tx["nonce"].get<uint64_t>();
-        auto nonce = eth::rlp_encoding(itobs(n));
-        unsigned_tx.push_back(nonce);
-        auto gas_price = eth::rlp_encoding(itobs(tx["gasPrice"].get<uint64_t>()));
-        unsigned_tx.push_back(gas_price);
-        auto gas_limit = eth::rlp_encoding(itobs(tx["gasLimit"].get<uint64_t>()));
-        unsigned_tx.push_back(gas_limit);
-        std::string address = tx["output"]["address"].get<std::string>();
-        auto op_addr = eth::rlp_encoding(address);
-        unsigned_tx.push_back(op_addr);
-        auto op_value = eth::rlp_encoding(itobs(tx["output"]["value"].get<uint64_t>()));
-        unsigned_tx.push_back(op_value);
-        auto data = eth::rlp_encoding(tx["data"].get<std::string>());
-        unsigned_tx.push_back(data);
-        
-        auto ch_id = eth::rlp_encoding(itobs(chain_id));
-        unsigned_tx.push_back(ch_id);
-        unsigned_tx.push_back(eth::rlp_encoding(itobs(0)));
-        unsigned_tx.push_back(eth::rlp_encoding(itobs(0)));
-        
-        for (auto ut : unsigned_tx) {
-            std::cout << ut.hex_str() << std::endl;
-        }
-        auto rlp_unsigned_tx = eth::rlp_encoding(unsigned_tx);
+        std::cout << unsigned_tx.hex_str() << std::endl;
 
       auto apdu =
-          build_sign(path::to_buffer(tx["input"]["path"]), bytestream(""), rlp_unsigned_tx);
+          build_sign(path::to_buffer(tx["input"]["path"]), bytestream(""), unsigned_tx);
       auto resp = send_sign(apdu, false);
       auto rest = parse_sign_resp(coin::eth, resp);
+        
+        auto v = std::get<1>(rest);
+        auto r = std::get<2>(rest).hex_str();
+        auto s = std::get<3>(rest).hex_str();
+        json signed_vrs = {
+            {"V", v},
+            {"R", r},
+            {"S", s}
+        };
 
-        std::vector<bytestream> signed_tx;
-        nonce = eth::rlp_encoding(eth::to_binary(tx["nouce"].get<uint64_t>()));
-        signed_tx.push_back(nonce);
-         gas_price = eth::rlp_encoding(eth::to_binary(tx["gasPrice"].get<uint64_t>()));
-        signed_tx.push_back(gas_price);
-         gas_limit = eth::rlp_encoding(eth::to_binary(tx["gasLimit"].get<uint64_t>()));
-        signed_tx.push_back(gas_limit);
-         op_addr = eth::rlp_encoding(tx["output"]["address"].get<std::string>());
-        signed_tx.push_back(op_addr);
-         op_value = eth::rlp_encoding(tx["output"]["value"].get<std::string>());
-        signed_tx.push_back(op_value);
-         data = eth::rlp_encoding(tx["data"].get<std::string>());
-        signed_tx.push_back(data);
-        
-         ch_id = eth::rlp_encoding(eth::to_binary(35 + chain_id * 2 + (std::get<1>(rest))));
-        signed_tx.push_back(ch_id);
-        signed_tx.push_back(eth::rlp_encoding(bytestream(std::get<2>(rest).hex_str())));
-        signed_tx.push_back(eth::rlp_encoding(bytestream(std::get<3>(rest).hex_str())));
-        
-        auto raw_tx = eth::rlp_encoding(signed_tx);
+        auto raw_tx = eth::rlp_encoding(tx, signed_vrs);
 
         auto tx_id = keccak256::hash(raw_tx);
       return json{
@@ -827,10 +800,57 @@ public:
           {"hex", raw_tx.hex_str()}
       };
     };
-       if (coin_type == coin::eth) {
+      
+      auto sign_eos = [&](const std::string &net_type, json tx) {
+          auto chain_id = eos::get_chain_id(net_type);
+          
+          auto rawTx = fcbuffer::serialize(tx);
+          auto packedContextFreeData = bytestream(0x20);
+          auto signBuf = chain_id + rawTx + packedContextFreeData;
+          auto signedTx = json {
+              {"compression", "none"},
+              {"packedContextFreeData", ""},
+              {"packed_trx", rawTx.hex_str()},
+              {"signatures", {}
+              }
+          };
+          while (true) {
+              auto resp = send_sign(signBuf, false);
+              auto rest = parse_sign_resp(coin::eos, resp);
+              auto remain = std::get<0>(rest);
+              
+              auto v = std::get<1>(rest);
+              auto r = std::get<2>(rest).hex_str();
+              auto s = std::get<3>(rest).hex_str();
+              auto i = v + 4 + 27;
+              
+              auto buffer = bytestream();
+              buffer.append((uint8_t)i);
+              buffer += r;
+              buffer += s;
+              
+              auto checkBuffer = buffer + bytestream("K1", 2);
+              auto check = ripemd160::hash(checkBuffer).split(0,4);
+              auto sign = buffer + check;
+              auto signature = EncodeBase58(sign.mem());
+              signedTx["signatures"] = {"SIG_K1_" + signature};
+              std::cout << "stgnatures:" << signedTx["signatures"][0].get<std::string>() << std::endl;
+              if (remain == 0) break;
+          }
+          auto txId = sha256::hash(rawTx).hex_str();
+          return json {
+              {"txId", txId},
+              {"signedTx", signedTx}
+          };
+      };
+      
+      if (coin_type == coin::eth) {
           return sign_eth(wallet::eth_main, tx);
       }
-       return sign_btc(coin_type, tx);
+      else if (coin_type == coin::eos) {
+          return sign_eos(wallet::eos_main, tx);
+      }
+      return sign_btc(coin_type, tx);
   }
 
 private:
@@ -912,12 +932,16 @@ private:
          std::string account_name = "eos_account";
          repo = bytestream(account_name.c_str(), account_name.length());
        }
-       else if (apdu.startWith("804802")) { //BTC
-           repo = bytestream("690FC37056A358C3A5B03F0375FF846CC9D48DB4BFF1AA782250D55812D213CE1B52FC5EBF811F2DEF0717AED8F851EE63B4491D7E9B084F3D92F0FA061137409B7EF9A41F5DCF7C1EA17CFC2493C24F5204B2E11BA21662192749226C0210B2553039087F380BEAB40FF933F045D06C7AB918F909B122F6FB9B48A07327203AFF");
+       else if (apdu.startWith("8048")) { //BTC
+           if (m_selected_app == "020002") { // btc
+             repo = bytestream("690FC37056A358C3A5B03F0375FF846CC9D48DB4BFF1AA782250D55812D213CE1B52FC5EBF811F2DEF0717AED8F851EE63B4491D7E9B084F3D92F0FA061137409B7EF9A41F5DCF7C1EA17CFC2493C24F5204B2E11BA21662192749226C0210B2553039087F380BEAB40FF933F045D06C7AB918F909B122F6FB9B48A07327203AFF");
+           } else if (m_selected_app == "023C02") { // eth
+             repo = bytestream("27915d275bb821af7c0ad622145571e964b6521b60f3de0ded56f3dff36afbf0412e897a21167e67e14520ca30f6e2b492ac0a37e4b537bb20092aff23cf9ef7")+ bytestream(0x40).append((uint8_t)0x2C);
+           } else if (m_selected_app == "02C202") { // eos
+             repo = bytestream("0015d9175f1cc6e2f53b8af2970ce1409873e2f015b8d79034516e065a46086d524050e4625490bfb0e08d79acccbbd8e14c54a170f41670c0b7e7210d93154af6")+ bytestream(0x40).append((uint8_t)0x00);
+           }
        }
-       else if (apdu.startWith("804803")) { //ETH
-           //TODO
-       }
+  
        return repo += bytestream("9000");
      }
 //    bytestream send(const bytestream& apdu, bool encrypt = true) {

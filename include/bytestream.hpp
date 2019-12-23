@@ -326,11 +326,11 @@ inline std::ostream &operator<<(std::ostream &out, bytestream &obj) {
   return out;
 }
     
-    static inline bytestream itobs(int i) {
-        std::stringstream ss;
-        std::string s;
-        ss << std::hex << i;
-        ss >> s;
-        return bytestream(s);
-    }
+static inline bytestream itobs(uint64_t i) {
+    std::stringstream ss;
+    std::string s;
+    ss << std::hex << i;
+    ss >> s;
+    return bytestream(s);
+}
 } // namespace excelsecu

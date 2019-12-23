@@ -241,31 +241,28 @@ using namespace excelsecu;
 
 - (void)testRlp {
     std::string dog = "dog";
-    auto ret1 = eth::rlp_encoding(dog);
-    std::cout << "ret1 = " << ret1.hex_str() << std::endl;
     
-    auto ret2 = eth::rlp_encoding(bytestream("0F"));
-    std::cout << "ret2 = " << ret2.hex_str() << std::endl;
+    json tx = {
+        {"nonce", 0},
+        {"gasPrice", 20000000000},
+        {"gasLimit", 21000},
+        { "output", {
+            {"address", "e0defb92145fef3c3a945637705fafd3aa74a209"},
+            {"value", 1000000000000000000}
+        }
+        },
+        {"data", "00"}
+    };
     
-    dog = "";
-    auto ret3 = eth::rlp_encoding(dog);
-    std::cout << "ret3 = " << ret3.hex_str() << std::endl;
+    json vrs = {
+        {"V", 27},
+        {"R", "09ebb6ca057a0535d6186462bc0b465b561c94a295bdb0621fc19208ab149a9c"},
+        {"S", "440ffd775ce91a833ab410777204d5341a6f9fa91216a6f3ee2c051fea6a0428"}
+    };
     
-    auto ret4 = eth::rlp_encoding(bytestream("0400"));
-    std::cout << "ret4 = " << ret4.hex_str() << std::endl;
-    
-    auto ret5 = eth::to_binary(1024);
-    std::cout << "ret5 = " << bytestream(ret5.c_str(), 0x02).hex_str() << std::endl;
-    
-    dog = "0x0987654321098765432109876543210987654321";
-    auto ret6 = eth::rlp_encoding(dog);
-     std::cout << "ret6 = " << ret6.hex_str() << std::endl;
-    
-    auto ret7 = eth::rlp_encoding(itobs(1000000000));
-    std::cout << "ret7 = " << ret7.hex_str() << std::endl;
-    
-    auto ret8 = eth::rlp_encoding(itobs((int)(0.518 * 100000000)));
-    std::cout << "ret8 = " << ret8.hex_str() << std::endl;
+    auto ret1 = eth::rlp_encoding(tx, vrs);
+    std::cout << "RLP encoded:\n" << ret1 << std::endl;
+    XCTAssert(ret1 == bytestream("f86c008504a817c80082520894e0defb92145fef3c3a945637705fafd3aa74a209880de0b6b3a7640000001ba009ebb6ca057a0535d6186462bc0b465b561c94a295bdb0621fc19208ab149a9ca0440ffd775ce91a833ab410777204d5341a6f9fa91216a6f3ee2c051fea6a0428"));
 }
 
 - (void)testPerformanceExample {

@@ -13,13 +13,18 @@
 #include <error.hpp>
 #include <algorithm/hash/hash.hpp>
 #include "../wallet.hpp"
+#include "json.hpp"
 
 #include <bitset>
 #include <sstream>
 
+using json = nlohmann::json;
+
 namespace excelsecu {
 namespace wallet {
 namespace fcbuffer {
+
+
 // 小端序
 uint64_t encode_name(const std::string &name) {
   std::string charmap = ".12345abcdefghijklmnopqrstuvwxyz";
@@ -45,6 +50,12 @@ uint64_t encode_name(const std::string &name) {
   }
   uint64_t value = std::bitset<64>(bitstr).to_ullong();
   return value;
+}
+
+bytestream encode(const std::string &name) {
+    auto result = bytestream();
+    result.append(encode_name(name));
+    return result.little_ending();
 }
 
 //小端序
@@ -88,6 +99,70 @@ std::string decode_name(uint64_t code) {
 
   return name;
 }
+
+bytestream serialize(const json tx) {
+    bytestream result;
+    auto expiration = itobs(tx["expiration"].get<uint32_t>()).little_ending();
+    result += expiration;
+    
+    auto ref_block_num = itobs(tx["ref_block_num"].get<uint16_t>()).little_ending();
+    result += ref_block_num;
+    
+    auto ref_block_prefix = itobs(tx["ref_block_prefix"].get<uint32_t>()).little_ending();
+     result += ref_block_prefix;
+    
+    auto max_net_usage_words = itobs(tx["max_net_usage_words"].get<uint32_t>()).little_ending();
+     result += max_net_usage_words;
+    
+    auto max_cpu_usage_ms = itobs(tx["max_cpu_usage_ms"].get<uint32_t>()).little_ending();
+     result += max_cpu_usage_ms;
+    
+    auto delay_sec = itobs(tx["delay_sec"].get<uint32_t>()).little_ending();
+     result += delay_sec;
+    
+    auto context_free_actions = tx["context_free_actions"];
+    result.append((uint8_t)context_free_actions.size());
+    for (auto action: context_free_actions) {
+        auto account = action["account"].get<std::string>();
+        result += encode(account);
+        
+        auto name = action["name"].get<std::string>();
+        result += encode(name);
+        
+        auto authorizations = action["authorization"];
+        for (auto auth: authorizations) {
+            result += encode(auth["actor"].get<std::string>());
+            result += encode(auth["permission"].get<std::string>());
+        }
+    }
+    
+    auto actions = tx["actions"];
+    result.append((uint8_t)actions.size());
+    for (auto action: actions) {
+        auto account = action["account"].get<std::string>();
+        result += encode(account);
+        
+        auto name = action["name"].get<std::string>();
+        result += encode(name);
+        
+        auto authorizations = action["authorization"];
+        result.append((uint8_t)authorizations.size());
+        for (auto auth: authorizations) {
+            result += encode(auth["actor"].get<std::string>());
+            result += encode(auth["permission"].get<std::string>());
+        }
+        
+        auto data = bytestream(action["data"].get<std::string>());
+        result.append((uint8_t)data.length());
+        result += data;
+        
+        auto transaction_extensions = action["transaction_extensions"];
+        result.append((uint8_t)transaction_extensions.size());
+    }
+    
+    return result;
+}
+
 } // namespace fcbuffer
 } // namespace wallet
 } // namespace excelsecu

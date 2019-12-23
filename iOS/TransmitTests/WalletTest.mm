@@ -162,20 +162,19 @@ using mock = wallet::s300;
     nlohmann::json tx = {
         {
             "input", {
-                { "address", "0x1234567890123456789012345678901234567890" },
+                { "address", "06b9d168c569b29e0728b7a1560d85123b622b9d" },
                 { "path", "m/44'/60'/0'/0/0" }
             }
         },
         {   "output", {
-                { "address", "0x0987654321098765432109876543210987654321" },
-                { "value" , 0.518 * 100000000 }
+                { "address", "06b9d168c569b29e0728b7a1560d85123b622b9d" },
+                { "value" , 10000000000000000 }
             }
         },
-            
-        {   "nonce", 0 },
-        {   "gasPrice", 1000000000 },
+        {   "nonce", "" },
+        {   "gasPrice", 2000000000 },
         {   "startGas", 21000 },
-        {   "gasLimit", 0 },
+        {   "gasLimit", "" },
         {   "data", "" }
     };
     
@@ -186,11 +185,94 @@ using mock = wallet::s300;
     auto ret = s300_mocker.get_wallet_info();
     std::cout << ret << std::endl;
     
-    s300_mocker.get_pubkey(wallet::coin::eth, "m/44'/1'/0'/0/0");
+    s300_mocker.get_pubkey(wallet::coin::eth, "m/44'/60'/0'/0/0");
     
-    s300_mocker.get_address(wallet::coin::eth, "m/44'/1'/0'/0/0");
+    auto address = s300_mocker.get_address(wallet::coin::eth, "m/44'/60'/0'/0/0");
+    std::cout << "ETH address: "<< address << std::endl;
+//    XCTAssertTrue(address == "06b9d168c569b29e0728b7a1560d85123b622b9d");
     
     auto signed_tx = s300_mocker.sign_transaction(wallet::coin::eth, tx);
+    std::string sign_id = signed_tx["id"];
+    std::string sign_hex = signed_tx["hex"];
+    XCTAssertTrue(bytestream(sign_id) == bytestream("11f46076d8390122b736fbebf49f514d93163b220fb72352acad2a7e4f3a0966"));
+    XCTAssertTrue(bytestream(sign_hex).hex_str() == bytestream("f868808477359400809406b9d168c569b29e0728b7a1560d85123b622b9d872386f26fc10000802ca027915d275bb821af7c0ad622145571e964b6521b60f3de0ded56f3dff36afbf0a0412e897a21167e67e14520ca30f6e2b492ac0a37e4b537bb20092aff23cf9ef7").hex_str());
+    std::cout << "stx:" << std::endl;
+    std::cout << signed_tx << std::endl;
+}
+
+- (void)testEOS {
+    nlohmann::json tx = {
+        {"expiration", 1538569524},
+        {"ref_block_num", 56170},
+        {"ref_block_prefix", 3374189397},
+        {"max_net_usage_words", 0},
+        {"max_cpu_usage_ms", 0},
+        {"delay_sec", 0},
+        {"context_free_actions", {}},
+        {"actions", {
+            {
+                {"account", "eosio.token"},
+                {"name", "transfer"},
+                {"authorization",{
+                    {
+                        {"actor", "inita"},
+                        {"permission", "active"}
+                    }
+                }},
+                {"data", "000000000093dd74000000008093dd747011010000000000045359530000000000"}
+            }
+        }},
+        {"transaction_extensions" , {}},
+        {"keyPaths", {
+            "m/48'/4'/1'/0'/0'"
+        }}
+    };
+    
+    XCTAssertTrue(excelsecu::wallet::fcbuffer::serialize(tx) == bytestream("34b5b45b6adb550b1ec9000000000100a6823403ea3055000000572d3ccdcd01000000000093dd7400000000a8ed323221000000000093dd74000000008093dd74701101000000000004535953000000000000"));
+    
+    
+    s300_mocker.init();
+    
+    s300_mocker.select(wallet::coin::eos);
+    
+    nlohmann::json tx_sign = {
+        {"expiration", 1540211560},
+        {"ref_block_num", 60832},
+        {"ref_block_prefix", 2249681555},
+        {"max_net_usage_words", 0},
+        {"max_cpu_usage_ms", 0},
+        {"delay_sec", 0},
+        {"context_free_actions", {}},
+        {"actions", {
+            {
+                {"account", "okkkkkkkkkkk"},
+                {"name", "transfer"},
+                {"authorization",{
+                    {
+                        {"actor", "bosbosbosbos"},
+                        {"permission", "active"}
+                    }
+                }},
+                {"data", "80e9c1f4607a303de04da299666f12cd640000000000000000424f53000000002a424f532043414d5041c4b0474e3a20596f752077696e2035303020424f532e20596f757265206c75636b"}
+            }
+        }},
+        {"transaction_extensions" , {}},
+        {"keyPaths", {
+            "m/48'/4'/1'/0'/0'"
+        }}
+    };
+    
+    auto txabi = excelsecu::wallet::fcbuffer::serialize(tx_sign);
+    std::cout << "txabi=" << txabi.hex_str() << std::endl;
+    XCTAssertTrue(bytestream("68c3cd5ba0ed936a1786000000000100218410420821a4000000572d3ccdcd0180e9c1f4607a303d00000000a8ed32324b80e9c1f4607a303de04da299666f12cd640000000000000000424f53000000002a424f532043414d5041c4b0474e3a20596f752077696e2035303020424f532e20596f757265206c75636b00") == txabi);
+    
+    auto result = s300_mocker.sign_transaction(wallet::coin::eos, tx_sign);
+    auto txId = result["txId"].get<std::string>();
+    auto signature = result["signedTx"]["signatures"][0];
+    
+    XCTAssertTrue(txId == bytestream("7d4924cbd382cbb9fb4f260d4b0f272ebaadfeba566d54835c632de424a54884").hex_str());
+    XCTAssert(signature == "SIG_K1_Jx7ZSuAgfSbGuAqYB34t57tGphR6Zb3AGTWCCsG8vaUg8PL4EvowtKteHM8Q7gocMjBxuUrVfK9GixBhbHrEHwHKPrR28P");
+    
 }
 
 - (void)testPerformanceExample {
