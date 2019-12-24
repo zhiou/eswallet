@@ -22,7 +22,7 @@ platform :ios do
   end
 
   lane :test do 
-  	scan(scheme: "wallet")
+  	scan(scheme: "Wallet")
   end
 
 end
