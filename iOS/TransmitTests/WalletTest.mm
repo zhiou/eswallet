@@ -73,6 +73,12 @@ using mock = wallet::s300;
     XCTAssert(path == "m/44'/60'/1'/0/0");
 }
 
+- (void)testAddressBuffer {
+    auto pubkey = bytestream("02B726B6894F7FCD89C52DD965F61DBA5B5C7E220FC9710E5F6EC267E17ADB2413");
+    auto buf = excelsecu::wallet::address::from_buffer(wallet::coin::eos, pubkey);
+    std::cout << buf << std::endl;
+}
+
 - (void)testFcBuffer {
     std::string name = "omotjik";
     auto encoded = wallet::fcbuffer::encode_name(name);

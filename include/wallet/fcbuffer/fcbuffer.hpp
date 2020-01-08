@@ -11,9 +11,9 @@
 #include <algorithm/base/base58.hpp>
 #include <bytestream.hpp>
 #include <error.hpp>
+#include <json/json.hpp>
 #include <algorithm/hash/hash.hpp>
-#include "../wallet.hpp"
-#include "json.hpp"
+#include <wallet/wallet.hpp>
 
 #include <bitset>
 #include <sstream>
@@ -96,7 +96,6 @@ std::string decode_name(uint64_t code) {
             continue;
         name += charmap[idx];
     }
-    
     return name;
 }
 

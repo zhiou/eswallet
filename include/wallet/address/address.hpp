@@ -32,8 +32,8 @@ bytestream to_buffer(const std::string &address) {
   if (address.length() > 3 && address.substr(0, 3) == "EOS") // eos
   {
     std::vector<unsigned char> ret;
-    if (DecodeBase58Check(address.substr(3), ret)) {
-      return bytestream(ret);
+    if (DecodeBase58(address.substr(3), ret)) {
+      return bytestream(ret).drop_tail(4);
     }
     throw tsm_err("invalid eos address", ERROR_COMMON_INVALID_DATA);
   } else if (address.length() > 2 && address.substr(0, 2) == "0x") // eth

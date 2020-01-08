@@ -21,7 +21,7 @@ namespace path {
 bytestream to_buffer(const std::string &path)
 {
   auto parts = utility::split(path, '/');
-
+  if (parts.size() == 0) return bytestream();
   auto begin = std::begin(parts);
   if (parts[0] == "m")
     begin++;
